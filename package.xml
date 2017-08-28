@@ -7,11 +7,6 @@
 
     <!-- authour information -->
     <author>Carlos Wang</author>
-    <maintainer
-        email="carlos.wang.uw@gmail.com">
-        carlos wang
-    </maintainer>
-
     <license>MIT</license>
 
     <!-- build tool information  -->
