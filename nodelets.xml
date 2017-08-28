@@ -1,0 +1,9 @@
+<library path = "lib/libximea_ros_cam_nodelet">
+    <class  name = "ximea_ros_cam/ximea_ros_cam"
+            type = "ximea_ros_cam::XimeaROSCam"
+            base_class_type = "nodelet::Nodelet">
+        <description>
+            Ximea Camera ROS Driver Nodelet.
+        </description>
+    </class>
+</library>

@@ -1,0 +1,56 @@
+####################
+# General Configuration Parameters Go Here!
+####################
+
+# directory to save images (make sure that directory exists!)
+image_directory: "~/"
+
+# save images to the disk
+save_disk: false 
+
+# save images on trigger (calibration only)
+calib_mode: false
+
+####################
+# Camera Configuration Parameters Go Here!
+####################
+
+# image_transport compressed image parameters
+image_transport_compressed_format: "png"
+image_transport_compressed_jpeg_quality: 100
+image_transport_compressed_png_level: 5
+
+# colour format
+format: "XI_RGB24"
+
+# triggering (0 - none, 1 - software trigger (NOT IMPLMENTED YET),
+# 2 - hardware trigger)
+cam_trigger_mode: 2
+hw_trigger_edge: 0            # if hw trigger, 0/1 = rising/falling edge trigger
+
+# for camera frame rate
+frame_rate_control: true      # enable or disable frame rate control
+                              # (works if no triggering is enabled)
+frame_rate_set: 10.0          # for trigger mode, fps limiter (0 for none)
+img_capture_timeout: 1000     # timeout in milliseconds for xiGetImage()
+
+# exposure settings
+auto_exposure: false          # auto exposure on or off
+exposure_time: 1000           # manual exposure time in microseconds
+manual_gain: 9                # manual exposure gain
+auto_exposure_priority: 0.8   # auto exposure to gain ratio (1 = use only exposure)
+auto_time_limit: 30000        # auto exposure time limit in microseconds
+auto_gain_limit: 2.0          # auto exposure gain limit
+
+# camera coloring
+# white balance mode: 0 - none, 1 - use coefficients, 2 = auto
+white_balance_mode: 2
+white_balance_coef_red: 3.0   # white balance red coefficient (0 to 8)
+white_balance_coef_green: 0.0 # white balance green coefficient (0 to 8)
+white_balance_coef_blue: 4.0  # white balance blue coefficient (0 to 8)
+
+# region of interest
+roi_left: 0                   # top left corner in pixels
+roi_top: 0
+roi_width: 1280               # width height in pixels
+roi_height: 1024

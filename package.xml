@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package format="2">
+    <!-- package information -->
+    <name>ximea_ros_cam</name>
+    <version>1.0.0</version>
+    <description>Ximea ROS Camera</description>
+
+    <!-- authour information -->
+    <author>Carlos Wang</author>
+    <maintainer
+        email="carlos.wang.uw@gmail.com">
+        carlos wang
+    </maintainer>
+
+    <license>MIT</license>
+
+    <!-- build tool information  -->
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <!-- depends -->
+    <depend>roscpp</depend>
+    <depend>roslib</depend>
+    <depend>nodelet</depend>
+    <depend>sensor_msgs</depend>
+    <depend>image_transport</depend>
+    <depend>camera_info_manager</depend>
+    <depend>std_msgs</depend>
+    <depend>opencv3</depend>
+
+    <!-- The export tag contains other, unspecified, tags -->
+    <export>
+        <!-- nodelet plugin -->
+        <nodelet plugin="${prefix}/nodelets.xml"/>
+    </export>
+</package>
