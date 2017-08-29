@@ -75,6 +75,14 @@ Examine `launch/example_cam.launch` and `config/example_cam_config.yaml` to get 
 
 To view the stream: `rosrun rqt_image_view rqt_image_view`
 
+## Launching Multiple Cameras:
+
+Each camera can be ran with their own individual launch files (the parameters will be defined in their own individual name spaces, which makes each camera "unique").
+
+Copy the `example_cam.launch` and input another serial number to `serial_no` of the other camera.
+
+**When launching multiple cameras, be sure to launch them at separate times (~1-2 seconds apart), this is potentially due to USB resource hog issues.**
+
 ## Parameter Descriptions:
 
 ### General
