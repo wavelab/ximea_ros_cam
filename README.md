@@ -107,9 +107,9 @@ Copy the `example_cam.launch` and input another serial number to `serial_no` of 
 
 `calib_mode` - Saves images everytime a trigger is pressed, under the director `<image_directory>/calib`
 
-### `compressed_image_transport` Compressed Image Parameters
+### Compressed Image Transport Parameters
 
-[image_transport](http://wiki.ros.org/image_transport) parameters
+See [compressed_image_transport](http://wiki.ros.org/compressed_image_transport) for more information.
 
 `image_transport_compressed_format` -  Format for the compressed image - `jpg` or `png`
 
