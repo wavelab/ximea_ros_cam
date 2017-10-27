@@ -8,6 +8,10 @@
     <!-- authour information -->
     <author>Carlos Wang</author>
     <license>MIT</license>
+    <maintainer
+        email="c25wang@uwaterloo.ca">
+        Carlos Wang
+    </maintainer>
 
     <!-- build tool information  -->
     <buildtool_depend>catkin</buildtool_depend>
