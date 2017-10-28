@@ -25,6 +25,7 @@
     <depend>camera_info_manager</depend>
     <depend>std_msgs</depend>
     <depend>opencv3</depend>
+    <depend>message_generation</depend>
 
     <!-- The export tag contains other, unspecified, tags -->
     <export>

@@ -114,6 +114,17 @@ void XimeaROSCam::initPubs() {
     this->cam_img_counter_pub_ = this->private_nh_.advertise<std_msgs::UInt32>(
             "image_count", 0);
 
+    this->private_nh_.param<bool>("publish_xi_get_image",
+                                 this->publish_xi_get_image_,
+                                 false);
+    ROS_INFO_STREAM("publish_xi_get_image: " << this->publish_xi_get_image_);
+
+    if(this->publish_xi_get_image_) {
+      this->cam_xi_get_image_pub_ =
+        this->private_nh_.advertise<ximea_ros_cam::XiGetImage>(
+          "xi_get_image", 0);
+    }
+
     // Report end of function
     NODELET_INFO("... Publishers Loaded. ");
 }
@@ -199,15 +210,15 @@ void XimeaROSCam::initCam() {
     //      -- apply compressed image parameters (from image_transport) --
     this->private_nh_.param( "image_transport_compressed_format",
         this->cam_compressed_format_, std::string("INVALID"));
-    ROS_INFO_STREAM("image_transport_compressed_format: " 
+    ROS_INFO_STREAM("image_transport_compressed_format: "
         << this->cam_compressed_format_);
     this->private_nh_.param( "image_transport_compressed_jpeg_quality",
         this->cam_compressed_jpeg_quality_, -1);
-    ROS_INFO_STREAM("image_transport_compressed_jpeg_quality: " 
+    ROS_INFO_STREAM("image_transport_compressed_jpeg_quality: "
         << this->cam_compressed_jpeg_quality_);
     this->private_nh_.param( "image_transport_compressed_png_level",
         this->cam_compressed_png_level_, -1);
-    ROS_INFO_STREAM("image_transport_compressed_png_level: " 
+    ROS_INFO_STREAM("image_transport_compressed_png_level: "
         << this->cam_compressed_png_level_);
 
     //      -- apply image format parameters --
@@ -252,7 +263,7 @@ void XimeaROSCam::initCam() {
     ROS_INFO_STREAM("cam_exposure_time_: " << this->cam_exposure_time_);
     this->private_nh_.param( "auto_exposure_priority",
         this->cam_autoexposure_priority_, -1.0f);
-    ROS_INFO_STREAM("cam_autoexposure_priority_: " 
+    ROS_INFO_STREAM("cam_autoexposure_priority_: "
         << this->cam_autoexposure_priority_);
     this->private_nh_.param("auto_time_limit", this->cam_autotime_limit_, -1);
     ROS_INFO_STREAM("cam_autotime_limit_: " << this->cam_autotime_limit_);
@@ -263,19 +274,19 @@ void XimeaROSCam::initCam() {
     //      -- apply white balance parameters --
     this->private_nh_.param( "white_balance_mode",
         this->cam_white_balance_mode_, -1);
-    ROS_INFO_STREAM("cam_white_balance_mode_: " 
+    ROS_INFO_STREAM("cam_white_balance_mode_: "
         << this->cam_white_balance_mode_);
     this->private_nh_.param( "white_balance_coef_red",
         this->cam_white_balance_coef_r_, -1.0f);
-    ROS_INFO_STREAM("cam_white_balance_coef_r_: " 
+    ROS_INFO_STREAM("cam_white_balance_coef_r_: "
         << this->cam_white_balance_coef_r_);
     this->private_nh_.param( "white_balance_coef_green",
         this->cam_white_balance_coef_g_, -1.0f);
-    ROS_INFO_STREAM("cam_white_balance_coef_g_: " 
+    ROS_INFO_STREAM("cam_white_balance_coef_g_: "
         << this->cam_white_balance_coef_g_);
     this->private_nh_.param( "white_balance_coef_blue",
         this->cam_white_balance_coef_b_, -1.0f);
-    ROS_INFO_STREAM("cam_white_balance_coef_b_: " 
+    ROS_INFO_STREAM("cam_white_balance_coef_b_: "
         << this->cam_white_balance_coef_b_);
 
     //      -- apply ROI parameters --
@@ -304,7 +315,7 @@ void XimeaROSCam::initCam() {
     // Setup image transport (publishing) and camera info topics
     image_transport::ImageTransport it(this->private_nh_);
     this->cam_pub_ = it.advertise("image_raw", 1);
-    this->cam_info_pub_ = 
+    this->cam_info_pub_ =
         this->private_nh_.advertise<sensor_msgs::CameraInfo>("camera_info", 1);
 
     // Setup camera info manager for calibration
@@ -385,6 +396,7 @@ void XimeaROSCam::openCam() {
     // errorHandling(xi_stat, "Error During triggering");
 
     // Camera hardware trigger mode enabled?
+    // TODO(jskhu): ximeaCam.setCamTriggerMode()
     if (this->cam_trigger_mode_ == 2) {
         if (this->cam_hw_trigger_edge_ == 0) {
             // Select trigger to be rising edge
@@ -610,7 +622,7 @@ void XimeaROSCam::frameCaptureCb() {
                 this->cam_pub_.publish(img);
 
                 // Publish camera calibration info
-                sensor_msgs::CameraInfo cam_info = 
+                sensor_msgs::CameraInfo cam_info =
                     this->cam_info_manager_->getCameraInfo();
                     // reset frame id
                 cam_info.header.frame_id = this->cam_frameid_;
@@ -649,6 +661,31 @@ void XimeaROSCam::frameCaptureCb() {
                     ROS_INFO_STREAM("Directory path not set!");
                 }
             }
+        }
+
+        // If active, publish xiGetImage info to ROS message
+        if(this->publish_xi_get_image_) {
+          ximea_ros_cam::XiGetImage xiGetImageMsg;
+          xiGetImageMsg.header.stamp = timestamp;
+          xiGetImageMsg.size = xi_img.size;
+          xiGetImageMsg.bp_size = xi_img.bp_size;
+          xiGetImageMsg.frm = xi_img.frm;
+          xiGetImageMsg.width = xi_img.width;
+          xiGetImageMsg.height = xi_img.height;
+          xiGetImageMsg.nframe = xi_img.nframe;
+          xiGetImageMsg.tsSec = xi_img.tsSec;
+          xiGetImageMsg.tsUSec = xi_img.tsUSec;
+          xiGetImageMsg.GPI_level = xi_img.GPI_level;
+          xiGetImageMsg.black_level = xi_img.black_level;
+          xiGetImageMsg.padding_x = xi_img.padding_x;
+          xiGetImageMsg.AbsoluteOffsetX = xi_img.AbsoluteOffsetX;
+          xiGetImageMsg.AbsoluteOffsetY = xi_img.AbsoluteOffsetY;
+          xiGetImageMsg.exposure_time_us = xi_img.exposure_time_us;
+          xiGetImageMsg.gain_db = xi_img.gain_db;
+          xiGetImageMsg.acq_nframe = xi_img.acq_nframe;
+          xiGetImageMsg.image_user_data = xi_img.image_user_data;
+          // xiGetImageMsg.exposure_sub_times_us = (unsigned int) xi_img.exposure_sub_times_us;
+          this->cam_xi_get_image_pub_.publish(xiGetImageMsg);
         }
     }
 
@@ -694,7 +731,7 @@ std::string XimeaROSCam::formatTimeString
         (boost::posix_time::ptime timestamp) {
     boost::posix_time::time_facet *facet = new boost::posix_time::time_facet();
     // Format is YYYYMMDD_HHMMSS_fractionalSeconds
-    facet->format("%Y%m%d_%H%M%S_%f"); 
+    facet->format("%Y%m%d_%H%M%S_%f");
 
     std::stringstream stream;
     stream.imbue(std::locale(std::locale::classic(), facet));

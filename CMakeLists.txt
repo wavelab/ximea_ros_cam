@@ -17,11 +17,19 @@ set(catkin_deps
     image_transport
     camera_info_manager
     std_msgs
+    message_generation
 )
 
 find_package(catkin REQUIRED ${catkin_deps})
 find_package(OpenCV 3 REQUIRED)
 find_package(Boost REQUIRED)
+
+# Declare ROS messages and services
+add_message_files(DIRECTORY msg FILES
+  XiGetImage.msg)
+
+# Generate messages
+generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(INCLUDE_DIRS   include
                CATKIN_DEPENDS ${catkin_deps}
@@ -71,7 +79,7 @@ target_link_libraries(${PROJECT_NAME}_node
 # #############
 # ## Testing ##
 # #############
-# 
+#
 # ## Add gtest based cpp test target and link libraries
 # if (CATKIN_ENABLE_TESTING)
 #   file(GLOB TEST_FILES "test/*.cpp")
