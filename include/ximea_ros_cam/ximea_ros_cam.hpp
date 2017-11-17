@@ -19,6 +19,7 @@
 #include <std_msgs/UInt32.h>
 #include <std_msgs/Empty.h>
 #include <camera_info_manager/camera_info_manager.h>
+#include <ximea_ros_cam/XiGetImage.h>
 
 //      OTHER INCLUDES
 #include <stdio.h>
@@ -83,7 +84,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     /**
      * @brief  Initialize image storage parameters.
      *
-     * Initialize image storage parameters. 
+     * Initialize image storage parameters.
      * Includes directory and compression parameters.
      */
     void initStorage();
@@ -109,6 +110,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     boost::shared_ptr<camera_info_manager::CameraInfoManager>
                         cam_info_manager_;   // Cam info manager handle
     ros::Publisher cam_info_pub_;             // Cam info publisher handle
+    ros::Publisher cam_xi_get_image_pub_; // xiGetImage info publisher handle
     // image_transport::ImageTransport cam_it_; // Image transport handle
     image_transport::Publisher cam_pub_;     // Image publisher handle
     // compressed image params
@@ -144,7 +146,7 @@ class XimeaROSCam : public nodelet::Nodelet {
 
     int cam_img_cap_timeout_;       // max time to wait for img
     // white balance mode: 0 - none, 1 - use coeffs, 2 = auto
-    int cam_white_balance_mode_;     
+    int cam_white_balance_mode_;
     float cam_white_balance_coef_r_; // white balance coefficient (rgb)
     float cam_white_balance_coef_g_;
     float cam_white_balance_coef_b_;
@@ -158,6 +160,9 @@ class XimeaROSCam : public nodelet::Nodelet {
     HANDLE xi_h_;                   // camera xiAPI handle
     float min_fps_;                 // camera calculated min fps
     float max_fps_;                 // camera calculated max fps
+
+    // Output Messages
+    bool publish_xi_get_image_;     // publish xiGetImage handle?
 
     // Callback function for Camera Frame
     ros::Timer t_frame_cb_;
