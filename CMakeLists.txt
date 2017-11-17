@@ -21,7 +21,9 @@ set(catkin_deps
 )
 
 find_package(catkin REQUIRED ${catkin_deps})
-find_package(OpenCV 3 REQUIRED)
+## Change to OpenCV 3 if necessary
+# find_package(OpenCV 3 REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED)
 
 # Declare ROS messages and services
