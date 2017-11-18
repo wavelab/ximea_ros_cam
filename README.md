@@ -101,7 +101,7 @@ Copy the `example_cam.launch` and input another serial number to `serial_no` of 
 
 ### Image Saving
 
-`image_directory` - Directory used by the flag `save_disk` and `calib_mode` (**Note: Must be a valid directory, otherwise the camera fails to launch**)
+`image_directory` - Directory used by the flag `save_disk` and `calib_mode` (**Note: Must be a valid directory path with an ABSOLUTE path, otherwise the camera fails to launch or will not create the directory properly. **)
 
 `save_disk` - Save images to disk, under the directory `<image_directory>/stream` 
 
