@@ -2,8 +2,8 @@
 # General Configuration Parameters Go Here!
 ####################
 
-# directory to save images (make sure that directory exists!)
-image_directory: "~/"
+# directory to save images (make sure that directory exists and that it is an absolute path).
+image_directory: "/home/dev/"  # must be absolute path, not relative path (i.e. '~')
 
 # save images to the disk
 save_disk: false 
