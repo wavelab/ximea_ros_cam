@@ -154,6 +154,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     // Bandwidth Limiting
     int cam_num_in_bus_;            // # cameras in a single bus
     float cam_bw_safetyratio_;        // ratio used based on a camera avail bw
+    int cam_detect_max_polls_;  // number of times camera is polled to open
 
     // Active variables
     bool is_active_;                // camera actively acquiring images?

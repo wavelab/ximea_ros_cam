@@ -237,6 +237,10 @@ void XimeaROSCam::initCam() {
     ROS_INFO_STREAM("cam_num_in_bus_: " << this->cam_num_in_bus_);
     this->private_nh_.param("bw_safetyratio", this->cam_bw_safetyratio_, -1.0f);
     ROS_INFO_STREAM("cam_bw_safetyratio_: " << this->cam_bw_safetyratio_);
+    this->private_nh_.param("cam_detect_max_polls",
+                            this->cam_detect_max_polls_, -1);
+    ROS_INFO_STREAM("cam_detect_max_polls: "
+                    << this->cam_detect_max_polls_);
 
     //      -- apply triggering parameters --
     this->private_nh_.param("cam_trigger_mode", this->cam_trigger_mode_, -1);
@@ -328,7 +332,7 @@ void XimeaROSCam::initCam() {
 void XimeaROSCam::openCam() {
     // Init variables
     XI_RETURN xi_stat;
-
+    int cam_detect_poll_count = 0;
 
     // Disable auto bandwidth calculation (before camera open)
     // Do this if bandwidth limitation is required or desired
@@ -336,10 +340,16 @@ void XimeaROSCam::openCam() {
         xiSetParamInt(0, XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
     }
 
-    // Open camera
-    xi_stat = xiOpenDeviceBy(XI_OPEN_BY_SN,
-                             this->cam_serialno_.c_str(),
-                             &this->xi_h_);
+    xi_stat = XI_NO_DEVICES_FOUND;
+
+    // Loop until camera is detected on the bus or max poll detection exceeded
+    while(xi_stat == XI_NO_DEVICES_FOUND &&
+          cam_detect_poll_count < this->cam_detect_max_polls_) {
+      xi_stat = xiOpenDeviceBy(XI_OPEN_BY_SN,
+                               this->cam_serialno_.c_str(),
+                               &this->xi_h_);
+      cam_detect_poll_count++;
+    }
 
     // leave if there isn't a valid handle
     if (this->xi_h_ == NULL) { return; }
