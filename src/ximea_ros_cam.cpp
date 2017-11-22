@@ -248,7 +248,7 @@ void XimeaROSCam::initCam() {
     this->private_nh_.param( "frame_rate_control",
         this->cam_framerate_control_, false);
     ROS_INFO_STREAM("cam_framerate_control_: " << this->cam_framerate_control_);
-    this->private_nh_.param("frame_rate_set", this->cam_framerate_set_, -1.0f);
+    this->private_nh_.param("frame_rate_set", this->cam_framerate_set_, -1);
     ROS_INFO_STREAM("cam_framerate_set_: " << this->cam_framerate_set_);
     this->private_nh_.param( "img_capture_timeout",
         this->cam_img_cap_timeout_, -1);
@@ -531,7 +531,7 @@ void XimeaROSCam::openCam() {
                                     XI_PRM_ACQ_TIMING_MODE,
                                     XI_ACQ_TIMING_MODE_FRAME_RATE);
             // Apply frame rate (we assume MQ camera here)
-            xi_stat = xiSetParamFloat(this->xi_h_,
+            xi_stat = xiSetParamInt(this->xi_h_,
                                       XI_PRM_FRAMERATE,
                                       this->cam_framerate_set_);
         } else {
