@@ -430,6 +430,10 @@ void XimeaROSCam::openCam() {
     // auto exposure.
     //      -- Set manual exposure --
     if (!this->cam_autoexposure_) {
+        // manual exposure
+        xi_stat = xiSetParamInt(this->xi_h_,
+                                XI_PRM_AEAG,
+                                0);
         xi_stat = xiSetParamInt(this->xi_h_,
                                 XI_PRM_EXPOSURE,
                                 this->cam_exposure_time_);
@@ -442,7 +446,7 @@ void XimeaROSCam::openCam() {
         // auto exposure
         xi_stat = xiSetParamInt(this->xi_h_,
                                 XI_PRM_AEAG,
-                                this->cam_autoexposure_);
+                                1);
         // auto priority
         xi_stat = xiSetParamFloat(this->xi_h_,
                                   XI_PRM_EXP_PRIORITY,
