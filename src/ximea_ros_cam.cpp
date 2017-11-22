@@ -430,6 +430,9 @@ void XimeaROSCam::openCam() {
     // auto exposure.
     //      -- Set manual exposure --
     if (!this->cam_autoexposure_) {
+        ROS_INFO_STREAM("Setting manual exposure: EXPOSURE AMOUNT: " << 
+                        this->cam_exposure_time_ << " GAIN: " << 
+                        this->cam_manualgain_);
         // manual exposure
         xi_stat = xiSetParamInt(this->xi_h_,
                                 XI_PRM_AEAG,
@@ -443,6 +446,10 @@ void XimeaROSCam::openCam() {
                                   this->cam_manualgain_);
     //      -- Set auto exposure --
     } else {
+        ROS_INFO_STREAM("Setting auto exposure: EXPOSURE TIME LIMIT: " << 
+                        this->cam_autotime_limit_ << " GAIN LIMIT: " << 
+                        this->cam_autogain_limit_ << " AUTO PRIORITY: " <<
+                        this->cam_autoexposure_priority);
         // auto exposure
         xi_stat = xiSetParamInt(this->xi_h_,
                                 XI_PRM_AEAG,
@@ -517,6 +524,9 @@ void XimeaROSCam::openCam() {
     // If we are not in trigger mode, determine if we want to limit fps
     if (this->cam_trigger_mode_ == 0) {
         if (this->cam_framerate_control_) {
+            ROS_INFO_STREAM("Setting frame rate control to: " << 
+                        this->cam_framerate_set_ << " Hz");
+            
             xi_stat = xiSetParamInt(this->xi_h_,
                                     XI_PRM_ACQ_TIMING_MODE,
                                     XI_ACQ_TIMING_MODE_FRAME_RATE);
