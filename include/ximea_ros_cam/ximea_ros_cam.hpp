@@ -142,7 +142,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     int cam_roi_width_;
     int cam_roi_height_;
     bool cam_framerate_control_;   // framerate control - enable or disable
-    float cam_framerate_set_;      // framerate control - setting fps
+    int cam_framerate_set_;      // framerate control - setting fps
 
     int cam_img_cap_timeout_;       // max time to wait for img
     // white balance mode: 0 - none, 1 - use coeffs, 2 = auto
