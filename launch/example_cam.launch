@@ -1,5 +1,6 @@
 <launch>
-    <node pkg="ximea_ros_cam" type="ximea_ros_cam_node" name="ximea_cam" output="screen">
+    <node pkg="nodelet" type="nodelet" name="ximea_cam_manager" args="manager" output="screen" />
+    <node pkg="nodelet" type="nodelet" name="ximea_cam_1" args="load ximea_ros_cam/ximea_ros_cam ximea_cam_manager" output="screen">
         <param name="serial_no"       type="string" value="49605451" />
         <param name="cam_name"        type="string" value="ximea_cam" />
         <param name="calib_file"      type="string" value=""         />
