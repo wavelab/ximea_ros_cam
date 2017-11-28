@@ -52,6 +52,7 @@ XimeaROSCam::~XimeaROSCam() {
     // Init variables
     XI_RETURN xi_stat;
 
+    NODELET_INFO("Shutting down Ximea camera");
     // Stop acquisition and close device if handle is available
     if (this->xi_h_ != NULL) {
         // Stop image acquisition
@@ -62,6 +63,8 @@ XimeaROSCam::~XimeaROSCam() {
         xiCloseDevice(this->xi_h_);
         this->xi_h_ = NULL;
     }
+    NODELET_INFO("Ximea camera stopped");
+    ros::Duration(1).sleep();
 
     // To avoid warnings
     (void)xi_stat;
@@ -78,7 +81,7 @@ void XimeaROSCam::onInit() {
 
     // Camera initialization
     this->initCam();
-    this->xi_open_device_cb_ = this->private_nh_.createTimer(ros::Duration(3),
+    this->xi_open_device_cb_ = this->private_nh_.createTimer(ros::Duration(1),
         boost::bind(&XimeaROSCam::openDeviceCb, this));
 
     // Publishers and Subscriptions
@@ -546,11 +549,11 @@ void XimeaROSCam::openDeviceCb() {
   int num;
   // Disable auto bandwidth calculation (before camera open)
   // Do this if bandwidth limitation is required or desired
+  num = xiGetNumberDevices(&tmp);
+
   if (this->cam_num_in_bus_ > 1) {
       xiSetParamInt(0, XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
   }
-
-  //num = xiGetNumberDevices(&tmp);
 
   xi_stat = xiOpenDeviceBy(XI_OPEN_BY_SN,
                            this->cam_serialno_.c_str(),
