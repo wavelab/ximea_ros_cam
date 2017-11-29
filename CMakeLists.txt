@@ -66,6 +66,9 @@ target_link_libraries(${PROJECT_NAME}
     yaml-cpp
 )
 
+## Package depends on its generated messages
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+
 ## Declare a C++ executable
 add_executable(${PROJECT_NAME}_node src/ximea_ros_cam_node.cpp)
 
