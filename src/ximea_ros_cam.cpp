@@ -114,15 +114,15 @@ void XimeaROSCam::initPubs() {
     this->cam_img_counter_pub_ = this->private_nh_.advertise<std_msgs::UInt32>(
             "image_count", 0);
 
-    this->private_nh_.param<bool>("publish_xi_get_image",
-                                 this->publish_xi_get_image_,
+    this->private_nh_.param<bool>("publish_xi_image_info",
+                                 this->publish_xi_image_info_,
                                  false);
-    ROS_INFO_STREAM("publish_xi_get_image: " << this->publish_xi_get_image_);
+    ROS_INFO_STREAM("publish_xi_image_info: " << this->publish_xi_image_info_);
 
-    if(this->publish_xi_get_image_) {
-      this->cam_xi_get_image_pub_ =
-        this->private_nh_.advertise<ximea_ros_cam::XiGetImage>(
-          "xi_get_image", 0);
+    if(this->publish_xi_image_info_) {
+      this->cam_xi_image_info_pub_ =
+        this->private_nh_.advertise<ximea_ros_cam::XiImageInfo>(
+          "xi_image_info", 0);
     }
 
     // Report end of function
@@ -430,8 +430,8 @@ void XimeaROSCam::openCam() {
     // auto exposure.
     //      -- Set manual exposure --
     if (!this->cam_autoexposure_) {
-        ROS_INFO_STREAM("Setting manual exposure: EXPOSURE AMOUNT: " << 
-                        this->cam_exposure_time_ << " GAIN: " << 
+        ROS_INFO_STREAM("Setting manual exposure: EXPOSURE AMOUNT: " <<
+                        this->cam_exposure_time_ << " GAIN: " <<
                         this->cam_manualgain_);
         // manual exposure
         xi_stat = xiSetParamInt(this->xi_h_,
@@ -446,8 +446,8 @@ void XimeaROSCam::openCam() {
                                   this->cam_manualgain_);
     //      -- Set auto exposure --
     } else {
-        ROS_INFO_STREAM("Setting auto exposure: EXPOSURE TIME LIMIT: " << 
-                        this->cam_autotime_limit_ << " GAIN LIMIT: " << 
+        ROS_INFO_STREAM("Setting auto exposure: EXPOSURE TIME LIMIT: " <<
+                        this->cam_autotime_limit_ << " GAIN LIMIT: " <<
                         this->cam_autogain_limit_ << " AUTO PRIORITY: " <<
                         this->cam_autoexposure_priority_);
         // auto exposure
@@ -524,9 +524,9 @@ void XimeaROSCam::openCam() {
     // If we are not in trigger mode, determine if we want to limit fps
     if (this->cam_trigger_mode_ == 0) {
         if (this->cam_framerate_control_) {
-            ROS_INFO_STREAM("Setting frame rate control to: " << 
+            ROS_INFO_STREAM("Setting frame rate control to: " <<
                         this->cam_framerate_set_ << " Hz");
-            
+
             xi_stat = xiSetParamInt(this->xi_h_,
                                     XI_PRM_ACQ_TIMING_MODE,
                                     XI_ACQ_TIMING_MODE_FRAME_RATE);
@@ -678,28 +678,28 @@ void XimeaROSCam::frameCaptureCb() {
         }
 
         // If active, publish xiGetImage info to ROS message
-        if(this->publish_xi_get_image_) {
-          ximea_ros_cam::XiGetImage xiGetImageMsg;
-          xiGetImageMsg.header.stamp = timestamp;
-          xiGetImageMsg.size = xi_img.size;
-          xiGetImageMsg.bp_size = xi_img.bp_size;
-          xiGetImageMsg.frm = xi_img.frm;
-          xiGetImageMsg.width = xi_img.width;
-          xiGetImageMsg.height = xi_img.height;
-          xiGetImageMsg.nframe = xi_img.nframe;
-          xiGetImageMsg.tsSec = xi_img.tsSec;
-          xiGetImageMsg.tsUSec = xi_img.tsUSec;
-          xiGetImageMsg.GPI_level = xi_img.GPI_level;
-          xiGetImageMsg.black_level = xi_img.black_level;
-          xiGetImageMsg.padding_x = xi_img.padding_x;
-          xiGetImageMsg.AbsoluteOffsetX = xi_img.AbsoluteOffsetX;
-          xiGetImageMsg.AbsoluteOffsetY = xi_img.AbsoluteOffsetY;
-          xiGetImageMsg.exposure_time_us = xi_img.exposure_time_us;
-          xiGetImageMsg.gain_db = xi_img.gain_db;
-          xiGetImageMsg.acq_nframe = xi_img.acq_nframe;
-          xiGetImageMsg.image_user_data = xi_img.image_user_data;
+        if(this->publish_xi_image_info_) {
+          ximea_ros_cam::XiImageInfo xiImageInfoMsg;
+          xiImageInfoMsg.header.stamp = timestamp;
+          xiImageInfoMsg.size = xi_img.size;
+          xiImageInfoMsg.bp_size = xi_img.bp_size;
+          xiImageInfoMsg.frm = xi_img.frm;
+          xiImageInfoMsg.width = xi_img.width;
+          xiImageInfoMsg.height = xi_img.height;
+          xiImageInfoMsg.nframe = xi_img.nframe;
+          xiImageInfoMsg.tsSec = xi_img.tsSec;
+          xiImageInfoMsg.tsUSec = xi_img.tsUSec;
+          xiImageInfoMsg.GPI_level = xi_img.GPI_level;
+          xiImageInfoMsg.black_level = xi_img.black_level;
+          xiImageInfoMsg.padding_x = xi_img.padding_x;
+          xiImageInfoMsg.AbsoluteOffsetX = xi_img.AbsoluteOffsetX;
+          xiImageInfoMsg.AbsoluteOffsetY = xi_img.AbsoluteOffsetY;
+          xiImageInfoMsg.exposure_time_us = xi_img.exposure_time_us;
+          xiImageInfoMsg.gain_db = xi_img.gain_db;
+          xiImageInfoMsg.acq_nframe = xi_img.acq_nframe;
+          xiImageInfoMsg.image_user_data = xi_img.image_user_data;
           // xiGetImageMsg.exposure_sub_times_us = (unsigned int) xi_img.exposure_sub_times_us;
-          this->cam_xi_get_image_pub_.publish(xiGetImageMsg);
+          this->cam_xi_image_info_pub_.publish(xiImageInfoMsg);
         }
     }
 
