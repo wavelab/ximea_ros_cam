@@ -19,7 +19,7 @@
 #include <std_msgs/UInt32.h>
 #include <std_msgs/Empty.h>
 #include <camera_info_manager/camera_info_manager.h>
-#include <ximea_ros_cam/XiGetImage.h>
+#include <ximea_ros_cam/XiImageInfo.h>
 
 //      OTHER INCLUDES
 #include <stdio.h>
@@ -110,7 +110,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     boost::shared_ptr<camera_info_manager::CameraInfoManager>
                         cam_info_manager_;   // Cam info manager handle
     ros::Publisher cam_info_pub_;             // Cam info publisher handle
-    ros::Publisher cam_xi_get_image_pub_; // xiGetImage info publisher handle
+    ros::Publisher cam_xi_image_info_pub_; // xiGetImage info publisher handle
     // image_transport::ImageTransport cam_it_; // Image transport handle
     image_transport::Publisher cam_pub_;     // Image publisher handle
     // compressed image params
@@ -162,7 +162,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     float max_fps_;                 // camera calculated max fps
 
     // Output Messages
-    bool publish_xi_get_image_;     // publish xiGetImage handle?
+    bool publish_xi_image_info_;     // publish xiGetImage handle?
 
     // Callback function for Camera Frame
     ros::Timer t_frame_cb_;

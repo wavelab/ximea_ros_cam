@@ -28,7 +28,7 @@ find_package(Boost REQUIRED)
 
 # Declare ROS messages and services
 add_message_files(DIRECTORY msg FILES
-  XiGetImage.msg)
+  XiImageInfo.msg)
 
 # Generate messages
 generate_messages(DEPENDENCIES std_msgs)
