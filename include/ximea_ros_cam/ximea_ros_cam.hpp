@@ -107,6 +107,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     // Inactive variables
     ros::Publisher cam_img_counter_pub_;     // Image counter
     uint32_t img_count_;                     // Image count
+    bool cam_info_loaded_;                    // is camera info loaded?
     boost::shared_ptr<camera_info_manager::CameraInfoManager>
                         cam_info_manager_;   // Cam info manager handle
     ros::Publisher cam_info_pub_;             // Cam info publisher handle
