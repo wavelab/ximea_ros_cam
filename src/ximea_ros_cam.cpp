@@ -322,7 +322,12 @@ void XimeaROSCam::initCam() {
     this->cam_info_manager_ =
         boost::make_shared<camera_info_manager::CameraInfoManager>
                     (this->private_nh_, this->cam_name_);
-    this->cam_info_manager_->loadCameraInfo(this->cam_calib_file_);
+    // only load and publish calib file if it isn't empty
+    // assume camera info is not loaded
+    this->cam_info_loaded_ = false;
+    if (this->cam_info_manager_->loadCameraInfo(this->cam_calib_file_)) {
+        this->cam_info_loaded_ = true;
+    }
 }
 
 void XimeaROSCam::openCam() {
@@ -635,12 +640,14 @@ void XimeaROSCam::frameCaptureCb() {
                 // Publish image
                 this->cam_pub_.publish(img);
 
-                // Publish camera calibration info
-                sensor_msgs::CameraInfo cam_info =
-                    this->cam_info_manager_->getCameraInfo();
-                    // reset frame id
-                cam_info.header.frame_id = this->cam_frameid_;
-                this->cam_info_pub_.publish(cam_info);
+                // Publish camera calibration info if camera info is loaded
+                if (this->cam_info_loaded_) {
+                    sensor_msgs::CameraInfo cam_info =
+                        this->cam_info_manager_->getCameraInfo();
+                        // reset frame id
+                    cam_info.header.frame_id = this->cam_frameid_;
+                    this->cam_info_pub_.publish(cam_info);
+                }
 
                 // Publish image counter
                 // Note that header.seq does this, but it is depreciated and
