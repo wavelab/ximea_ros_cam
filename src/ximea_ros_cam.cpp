@@ -52,6 +52,7 @@ XimeaROSCam::~XimeaROSCam() {
     // Init variables
     XI_RETURN xi_stat;
 
+    NODELET_INFO("Shutting down Ximea camera");
     // Stop acquisition and close device if handle is available
     if (this->xi_h_ != NULL) {
         // Stop image acquisition
@@ -62,6 +63,7 @@ XimeaROSCam::~XimeaROSCam() {
         xiCloseDevice(this->xi_h_);
         this->xi_h_ = NULL;
     }
+    NODELET_INFO("Ximea camera stopped");
 
     // To avoid warnings
     (void)xi_stat;
@@ -78,7 +80,8 @@ void XimeaROSCam::onInit() {
 
     // Camera initialization
     this->initCam();
-    this->openCam();
+    this->xi_open_device_cb_ = this->private_nh_.createTimer(ros::Duration(2),
+        boost::bind(&XimeaROSCam::openDeviceCb, this));
 
     // Publishers and Subscriptions
     this->initPubs();
@@ -334,18 +337,6 @@ void XimeaROSCam::openCam() {
     // Init variables
     XI_RETURN xi_stat;
 
-
-    // Disable auto bandwidth calculation (before camera open)
-    // Do this if bandwidth limitation is required or desired
-    if (this->cam_num_in_bus_ > 1) {
-        xiSetParamInt(0, XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
-    }
-
-    // Open camera
-    xi_stat = xiOpenDeviceBy(XI_OPEN_BY_SN,
-                             this->cam_serialno_.c_str(),
-                             &this->xi_h_);
-
     // leave if there isn't a valid handle
     if (this->xi_h_ == NULL) { return; }
 
@@ -568,6 +559,28 @@ void XimeaROSCam::openCam() {
 
     // To avoid warnings
     (void)xi_stat;
+}
+
+void XimeaROSCam::openDeviceCb() {
+  XI_RETURN xi_stat;
+
+  // Disable auto bandwidth calculation (before camera open)
+  // Do this if bandwidth limitation is required or desired
+  if (this->cam_num_in_bus_ > 1) {
+      xiSetParamInt(0, XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
+  }
+
+  xi_stat = xiOpenDeviceBy(XI_OPEN_BY_SN,
+                           this->cam_serialno_.c_str(),
+                           &this->xi_h_);
+  ROS_INFO_STREAM("Polling cam_serialno " << this->cam_serialno_);
+  if (this->xi_h_ != NULL) {
+    this->xi_open_device_cb_.stop();
+    XimeaROSCam::openCam();
+  }
+
+  // To avoid warnings
+  (void)xi_stat;
 }
 
 // Start aquiring data
