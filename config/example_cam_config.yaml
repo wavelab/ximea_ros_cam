@@ -25,7 +25,7 @@ format: "XI_RGB24"
 
 # triggering (0 - none, 1 - software trigger (NOT IMPLMENTED YET),
 # 2 - hardware trigger)
-cam_trigger_mode: 2
+cam_trigger_mode: 0
 hw_trigger_edge: 0            # if hw trigger, 0/1 = rising/falling edge trigger
 
 # for camera frame rate
@@ -36,7 +36,7 @@ img_capture_timeout: 1000     # timeout in milliseconds for xiGetImage()
 
 # exposure settings
 auto_exposure: false          # auto exposure on or off
-exposure_time: 1000           # manual exposure time in microseconds
+exposure_time: 6000           # manual exposure time in microseconds
 manual_gain: 9                # manual exposure gain
 auto_exposure_priority: 0.8   # auto exposure to gain ratio (1 = use only exposure)
 auto_time_limit: 30000        # auto exposure time limit in microseconds

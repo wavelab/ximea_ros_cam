@@ -126,6 +126,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     int cam_bytesperpixel_;                  // Camera image bytes per pixel
     std::string cam_serialno_;               // Camera serial no
     std::string cam_frameid_;
+    float poll_time_;			     // For launching cameras in succession
     int cam_model_;
     std::string cam_calib_file_;
     int cam_trigger_mode_;
@@ -166,6 +167,9 @@ class XimeaROSCam : public nodelet::Nodelet {
     bool publish_xi_image_info_;     // publish xiGetImage handle?
 
     // Callback function for Camera Frame
+    ros::Timer xi_open_device_cb_;
+    void openDeviceCb();
+
     ros::Timer t_frame_cb_;
     void frameCaptureCb();
 
