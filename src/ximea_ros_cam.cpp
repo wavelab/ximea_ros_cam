@@ -52,6 +52,7 @@ XimeaROSCam::~XimeaROSCam() {
     // Init variables
     XI_RETURN xi_stat;
 
+    ROS_INFO("Shutting down ximea_ros_cam node...");
     // Stop acquisition and close device if handle is available
     if (this->xi_h_ != NULL) {
         // Stop image acquisition
@@ -61,7 +62,10 @@ XimeaROSCam::~XimeaROSCam() {
         // Close camera device
         xiCloseDevice(this->xi_h_);
         this->xi_h_ = NULL;
+        
+        ROS_INFO_STREAM("Closed device: " << this->cam_serialno_);
     }
+    ROS_INFO("ximea_ros_cam node shutdown complete.");
 
     // To avoid warnings
     (void)xi_stat;
@@ -71,14 +75,13 @@ XimeaROSCam::~XimeaROSCam() {
 // onInit() - on the initialization of the nodelet (not the class)
 void XimeaROSCam::onInit() {
     // Report start of function
-    NODELET_INFO("Initializing Nodelet ... ");
+    ROS_INFO("Initializing Nodelet ... ");
 
     // Execute initialization functions
     this->initNodeHandles();
 
     // Camera initialization
     this->initCam();
-    this->openCam();
 
     // Publishers and Subscriptions
     this->initPubs();
@@ -90,26 +93,26 @@ void XimeaROSCam::onInit() {
     this->initStorage();
 
     // Report end of function
-    NODELET_INFO("... Nodelet Initialized. Waiting for Input...");
+    ROS_INFO("... Nodelet Initialized. Waiting for Input...");
 }
 
 // initNodeHandles() - initialize the private/public node handles
 void XimeaROSCam::initNodeHandles() {
     // Report start of function
-    NODELET_INFO("Loading Node Handles ... ");
+    ROS_INFO("Loading Node Handles ... ");
 
     // get public/private node handle
     this->public_nh_ = this->getNodeHandle();
     this->private_nh_ = this->getPrivateNodeHandle();
 
     // Report end of function
-    NODELET_INFO("... Node Handles Loaded. ");
+    ROS_INFO("... Node Handles Loaded. ");
 }
 
 // initPubs() - initialize the publishers
 void XimeaROSCam::initPubs() {
     // Report start of function
-    NODELET_INFO("Loading Publishers ... ");
+    ROS_INFO("Loading Publishers ... ");
 
     this->cam_img_counter_pub_ = this->private_nh_.advertise<std_msgs::UInt32>(
             "image_count", 0);
@@ -126,13 +129,17 @@ void XimeaROSCam::initPubs() {
     }
 
     // Report end of function
-    NODELET_INFO("... Publishers Loaded. ");
+    ROS_INFO("... Publishers Loaded. ");
 }
 
 // initTimers() - initialize the timers
 void XimeaROSCam::initTimers() {
     // Report start of function
-    NODELET_INFO("Loading Timers ... ");
+    ROS_INFO("Loading Timers ... ");
+
+    // Load camera polling callback timer
+    this->xi_open_device_cb_ = this->private_nh_.createTimer(ros::Duration(2), 
+        boost::bind(&XimeaROSCam::openDeviceCb, this));
 
     // Load camera frame capture callback timer
     this->t_frame_cb_ = this->public_nh_.createTimer(ros::Duration(0),
@@ -140,12 +147,12 @@ void XimeaROSCam::initTimers() {
     ROS_INFO_STREAM("t_frame_cb_: " << this->t_frame_cb_);
 
     // Report end of function
-    NODELET_INFO("... Timers Loaded.");
+    ROS_INFO("... Timers Loaded.");
 }
 
 
 void XimeaROSCam::initStorage() {
-    NODELET_INFO("Loading Image Storage ... ");
+    ROS_INFO("Loading Image Storage ... ");
 
     this->private_nh_.param<std::string>("image_directory",
                                         this->image_directory_,
@@ -183,7 +190,7 @@ void XimeaROSCam::initStorage() {
 
     this->save_trigger_ = false;
 
-    NODELET_INFO("Image Storage Loaded.");
+    ROS_INFO("Image Storage Loaded.");
 }
 
 void XimeaROSCam::initCam() {
@@ -328,23 +335,18 @@ void XimeaROSCam::initCam() {
     if (this->cam_info_manager_->loadCameraInfo(this->cam_calib_file_)) {
         this->cam_info_loaded_ = true;
     }
-}
-
-void XimeaROSCam::openCam() {
-    // Init variables
-    XI_RETURN xi_stat;
-
 
     // Disable auto bandwidth calculation (before camera open)
     // Do this if bandwidth limitation is required or desired
     if (this->cam_num_in_bus_ > 1) {
         xiSetParamInt(0, XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
     }
+}
 
-    // Open camera
-    xi_stat = xiOpenDeviceBy(XI_OPEN_BY_SN,
-                             this->cam_serialno_.c_str(),
-                             &this->xi_h_);
+void XimeaROSCam::openCam() {
+
+    // Init variables
+    XI_RETURN xi_stat;
 
     // leave if there isn't a valid handle
     if (this->xi_h_ == NULL) { return; }
@@ -570,6 +572,26 @@ void XimeaROSCam::openCam() {
     (void)xi_stat;
 }
 
+void XimeaROSCam::openDeviceCb() {
+    XI_RETURN xi_stat;
+
+    ROS_INFO_STREAM("Polling Ximea Cam. Serial #: " << this->cam_serialno_);
+
+    xi_stat = xiOpenDeviceBy(XI_OPEN_BY_SN,
+            this->cam_serialno_.c_str(),
+            &this->xi_h_);
+
+    if (this->xi_h_ != NULL) {
+        ROS_INFO_STREAM("Poll successful. Loading serial #: "
+                        << this->cam_serialno_);
+        this->xi_open_device_cb_.stop();
+        XimeaROSCam::openCam();
+    }
+
+    // To avoid warnings
+    (void)xi_stat;
+}
+
 // Start aquiring data
 void XimeaROSCam::frameCaptureCb() {
     // Init variables
@@ -580,16 +602,12 @@ void XimeaROSCam::frameCaptureCb() {
     ros::Time timestamp;
     std::string time_str;
 
-    ROS_INFO_THROTTLE(1, "Capture CB Looping...");
-
     xi_img.size = sizeof(XI_IMG);
     xi_img.bp = NULL;
     xi_img.bp_size = 0;
 
     // Acquisition started
     if (this->is_active_) {
-        ROS_INFO("Capturing image...");
-
         // Acquire image
         xi_stat = xiGetImage(this->xi_h_,
                              this->cam_img_cap_timeout_,
@@ -601,10 +619,13 @@ void XimeaROSCam::frameCaptureCb() {
 
         // Was the image retrieval successful?
         if (xi_stat == XI_OK) {
-            ROS_INFO_STREAM("Image captured... width: "
-                            << xi_img.width
-                            << " and height: "
-                            << xi_img.height);
+            ROS_INFO_STREAM_THROTTLE(3, 
+                "Capturing image from Ximea camera serial no: " 
+                << this->cam_serialno_
+                << ". WxH: "
+                << xi_img.width
+                << " x "
+                << xi_img.height << ".");
             // Setup image
             img_buffer = reinterpret_cast<char *>(xi_img.bp);
             img_buf_size = xi_img.width * xi_img.height
@@ -682,6 +703,9 @@ void XimeaROSCam::frameCaptureCb() {
                     ROS_INFO_STREAM("Directory path not set!");
                 }
             }
+        }
+        else {
+
         }
 
         // If active, publish xiGetImage info to ROS message

@@ -1,6 +1,6 @@
 <launch>
     <node pkg="ximea_ros_cam" type="ximea_ros_cam_node" name="ximea_cam" output="screen">
-        <param name="serial_no"       type="string" value="49605451" />
+        <param name="serial_no"       type="string" value="12345678" />
         <param name="cam_name"        type="string" value="ximea_cam" />
         <param name="calib_file"      type="string" value=""         />
         <param name="frame_id"        type="string" value="0"        />

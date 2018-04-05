@@ -166,6 +166,9 @@ class XimeaROSCam : public nodelet::Nodelet {
     bool publish_xi_image_info_;     // publish xiGetImage handle?
 
     // Callback function for Camera Frame
+    ros::Timer xi_open_device_cb_;
+    void openDeviceCb();
+
     ros::Timer t_frame_cb_;
     void frameCaptureCb();
 
