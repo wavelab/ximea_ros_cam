@@ -137,8 +137,9 @@ void XimeaROSCam::initTimers() {
     // Report start of function
     ROS_INFO("Loading Timers ... ");
 
-    // Load camera polling callback timer
-    this->xi_open_device_cb_ = this->private_nh_.createTimer(ros::Duration(2), 
+    // Load camera polling callback timer ((Ensure that with multiple cameras, 
+    // each time is about 2 seconds spaced apart)
+    this->xi_open_device_cb_ = this->private_nh_.createTimer(ros::Duration(this->poll_time_), 
         boost::bind(&XimeaROSCam::openDeviceCb, this));
 
     // Load camera frame capture callback timer
@@ -213,6 +214,8 @@ void XimeaROSCam::initCam() {
     this->private_nh_.param( "calib_file", this->cam_calib_file_,
         std::string("INVALID"));
     ROS_INFO_STREAM("calibration file: " << this->cam_calib_file_);
+    this->private_nh_.param("poll_time", this->poll_time_, -1.0f);
+    ROS_INFO_STREAM("poll_time_: " << this->poll_time_);
 
     //      -- apply compressed image parameters (from image_transport) --
     this->private_nh_.param( "image_transport_compressed_format",
@@ -581,7 +584,7 @@ void XimeaROSCam::openDeviceCb() {
             this->cam_serialno_.c_str(),
             &this->xi_h_);
 
-    if (this->xi_h_ != NULL) {
+    if (xi_stat == XI_OK && this->xi_h_ != NULL) {
         ROS_INFO_STREAM("Poll successful. Loading serial #: "
                         << this->cam_serialno_);
         this->xi_open_device_cb_.stop();
