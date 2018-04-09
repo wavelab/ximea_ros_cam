@@ -659,6 +659,7 @@ void XimeaROSCam::frameCaptureCb() {
                                        xi_img.width,
                                        xi_img.width * this->cam_bytesperpixel_,
                                        img_buffer);
+                img.header.frame_id = this->cam_frameid_;
                 img.header.stamp = timestamp;
 
                 // Publish image
@@ -670,6 +671,7 @@ void XimeaROSCam::frameCaptureCb() {
                         this->cam_info_manager_->getCameraInfo();
                         // reset frame id
                     cam_info.header.frame_id = this->cam_frameid_;
+                    cam_info.header.stamp = timestamp;
                     this->cam_info_pub_.publish(cam_info);
                 }
 
@@ -714,6 +716,7 @@ void XimeaROSCam::frameCaptureCb() {
         // If active, publish xiGetImage info to ROS message
         if(this->publish_xi_image_info_) {
           ximea_ros_cam::XiImageInfo xiImageInfoMsg;
+          xiImageInfoMsg.header.frame_id = this->cam_frameid_;
           xiImageInfoMsg.header.stamp = timestamp;
           xiImageInfoMsg.size = xi_img.size;
           xiImageInfoMsg.bp_size = xi_img.bp_size;
