@@ -1,5 +1,13 @@
 # ximea_ros_cam
 
+# Prerequisites
+
+Tested on:
+
+* Ximea USB 3.0 MQ013CG-E2
+
+**Make sure that the camera firmware (both CPU and FPGA) are updated to the latest stable firmware! See: https://www.ximea.com/support/wiki/allprod/XIMEA_Camera_Firmware_Command-Line_Update for more info**
+
 # Installing Ximea Camera Driver
 
 ## Install the Ximea Software Package
