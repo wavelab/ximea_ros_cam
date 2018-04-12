@@ -339,11 +339,9 @@ void XimeaROSCam::initCam() {
         this->cam_info_loaded_ = true;
     }
 
-    // Disable auto bandwidth calculation (before camera open)
-    // Do this if bandwidth limitation is required or desired
-    if (this->cam_num_in_bus_ > 1) {
-        xiSetParamInt(0, XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
-    }
+    // Enable auto bandwidth calculation to ensure bandwidth limiting and
+    // framerate setting are supported
+    xiSetParamInt(0, XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_ON);
 }
 
 void XimeaROSCam::openCam() {
@@ -394,11 +392,11 @@ void XimeaROSCam::openCam() {
     }
 
     // error handling
-    //TODO(Carlos) Add error handling for xi_stat
+    //TODO(carloswanguw) Add error handling for xi_stat
     // errorHandling(stat, "image_format");
 
     // //      -- Set image trigger mode --
-    //TODO(Carlos) Add hardware triggering mode here
+    //TODO(carloswanguw) Add hardware triggering mode here
     // // Setup trigger mode
     // xi_stat = xiSetParamInt(this->xi_h_, XI_PRM_TRG_SOURCE, XI_TRG_SOFTWARE);
     // // If software trigger, this is to send a software trigger to the cam
@@ -406,7 +404,6 @@ void XimeaROSCam::openCam() {
     // errorHandling(xi_stat, "Error During triggering");
 
     // Camera hardware trigger mode enabled?
-    // TODO(jskhu): ximeaCam.setCamTriggerMode()
     if (this->cam_trigger_mode_ == 2) {
         if (this->cam_hw_trigger_edge_ == 0) {
             // Select trigger to be rising edge
