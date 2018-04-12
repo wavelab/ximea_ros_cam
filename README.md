@@ -99,6 +99,8 @@ Copy the `example_cam.launch` and input another serial number to `serial_no` of 
 
 `bw_safetyratio` - Bandwidth safety ratio, a multiplier to the bandwidth allocated for each camera
 
+`poll_time` - Used to set the duration (in seconds) which the camera is attempted to be opened again. When using multiple cameras, a duration of 2 seconds between each camera is recommended. (i.e. `poll_time=0.0` and `poll_time=2.0` for cameras 1 and 2).
+
 ### Image Saving
 
 `image_directory` - Directory used by the flag `save_disk` and `calib_mode` (**Note: Must be a valid directory path with an ABSOLUTE path, otherwise the camera fails to launch or will not create the directory properly. **)
