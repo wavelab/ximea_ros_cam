@@ -325,18 +325,23 @@ void XimeaROSCam::initCam() {
     // Setup image transport (publishing) and camera info topics
     image_transport::ImageTransport it(this->private_nh_);
     this->cam_pub_ = it.advertise("image_raw", 1);
-    this->cam_info_pub_ =
-        this->private_nh_.advertise<sensor_msgs::CameraInfo>("camera_info", 1);
 
-    // Setup camera info manager for calibration
-    this->cam_info_manager_ =
-        boost::make_shared<camera_info_manager::CameraInfoManager>
-                    (this->private_nh_, this->cam_name_);
     // only load and publish calib file if it isn't empty
     // assume camera info is not loaded
     this->cam_info_loaded_ = false;
     if (this->cam_info_manager_->loadCameraInfo(this->cam_calib_file_)) {
         this->cam_info_loaded_ = true;
+    }
+    // loaded camera info properly
+    if (this->cam_info_loaded_) {
+        // advertise
+        this->cam_info_pub_ =
+            this->private_nh_.advertise<sensor_msgs::CameraInfo>(
+                "camera_info", 1);
+        // Setup camera info manager for calibration
+        this->cam_info_manager_ =
+            boost::make_shared<camera_info_manager::CameraInfoManager>
+                        (this->private_nh_, this->cam_name_);
     }
 
     // Enable auto bandwidth calculation to ensure bandwidth limiting and
