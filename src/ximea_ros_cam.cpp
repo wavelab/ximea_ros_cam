@@ -46,6 +46,7 @@ XimeaROSCam::XimeaROSCam() {
     this->cam_trigger_mode_ = 0;
     this->is_active_ = false;
     this->xi_h_ = NULL;
+    this->cam_info_loaded_ = false;
 }
 
 XimeaROSCam::~XimeaROSCam() {
@@ -328,7 +329,11 @@ void XimeaROSCam::initCam() {
 
     // only load and publish calib file if it isn't empty
     // assume camera info is not loaded
+    // Setup camera info manager for calibration
     this->cam_info_loaded_ = false;
+    this->cam_info_manager_ =
+        boost::make_shared<camera_info_manager::CameraInfoManager>
+                    (this->private_nh_, this->cam_name_);
     if (this->cam_info_manager_->loadCameraInfo(this->cam_calib_file_)) {
         this->cam_info_loaded_ = true;
     }
@@ -338,10 +343,6 @@ void XimeaROSCam::initCam() {
         this->cam_info_pub_ =
             this->private_nh_.advertise<sensor_msgs::CameraInfo>(
                 "camera_info", 1);
-        // Setup camera info manager for calibration
-        this->cam_info_manager_ =
-            boost::make_shared<camera_info_manager::CameraInfoManager>
-                        (this->private_nh_, this->cam_name_);
     }
 
     // Enable auto bandwidth calculation to ensure bandwidth limiting and
