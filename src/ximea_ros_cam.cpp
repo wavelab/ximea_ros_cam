@@ -46,6 +46,7 @@ XimeaROSCam::XimeaROSCam() {
     this->cam_trigger_mode_ = 0;
     this->is_active_ = false;
     this->xi_h_ = NULL;
+    this->cam_info_loaded_ = false;
 }
 
 XimeaROSCam::~XimeaROSCam() {
