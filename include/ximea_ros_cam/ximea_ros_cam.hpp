@@ -165,9 +165,9 @@ class XimeaROSCam : public nodelet::Nodelet {
     bool enable_diagnostics;
     diagnostic_updater::Updater diag_updater;
     std::shared_ptr<diagnostic_updater::TopicDiagnostic> cam_pub_diag;
+    double frequency_tolerance;
     double frequency_min;
     double frequency_max;
-    double frequency_tolerance;
     double age_min;
     double age_max;
 

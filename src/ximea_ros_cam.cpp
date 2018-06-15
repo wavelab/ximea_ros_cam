@@ -47,13 +47,7 @@ XimeaROSCam::XimeaROSCam() : diag_updater{} {
     this->is_active_ = false;
     this->xi_h_ = NULL;
     this->cam_info_loaded_ = false;
-
-    // TODO: Revise/relocate these n
-    this->frequency_min = 9.0;
-    this->frequency_max = 11.0;
-    this->frequency_tolerance = 0.0;
     this->age_min = 0.0;
-    this->age_max = 0.1;
 }
 
 XimeaROSCam::~XimeaROSCam() {
@@ -122,6 +116,8 @@ void XimeaROSCam::initNodeHandles() {
 
 void XimeaROSCam::initDiagnostics() {
     if (this->enable_diagnostics) {
+        this->frequency_min = this->cam_framerate_set_ - this->frequency_tolerance;
+        this->frequency_max = this->cam_framerate_set_ + this->frequency_tolerance;
         this->diag_updater.setHardwareID(this->cam_name_);
         this->cam_pub_diag =
             std::make_shared<diagnostic_updater::TopicDiagnostic>(
@@ -129,7 +125,7 @@ void XimeaROSCam::initDiagnostics() {
                 this->diag_updater,
                 diagnostic_updater::FrequencyStatusParam(
                     &this->frequency_min, &this->frequency_max,
-                    frequency_tolerance, 1.0),
+                    0.0, 10),
                 diagnostic_updater::TimeStampStatusParam(
                     this->age_min, this->age_max));
     }
@@ -243,7 +239,11 @@ void XimeaROSCam::initCam() {
     this->private_nh_.param("poll_time", this->poll_time_, -1.0f);
     ROS_INFO_STREAM("poll_time_: " << this->poll_time_);
     this->private_nh_.param("enable_diagnostics", this->enable_diagnostics, false);
+    ROS_INFO_STREAM("frequency_tolerance: " << this->frequency_tolerance);
+    this->private_nh_.param("frequency_tolerance", this->frequency_tolerance, 1.0);
     ROS_INFO_STREAM("enable_diagnostics: " << this->enable_diagnostics);
+    this->private_nh_.param("data_age_max", this->age_max, 0.1);
+    ROS_INFO_STREAM("data_age_max: " << this->age_max);
 
     //      -- apply compressed image parameters (from image_transport) --
     this->private_nh_.param( "image_transport_compressed_format",
@@ -696,7 +696,6 @@ void XimeaROSCam::frameCaptureCb() {
                 this->cam_pub_.publish(img);
                 if (this->enable_diagnostics) {
                     cam_pub_diag->tick(timestamp);
-                    // this->cam_diag_pub->publish(img);
                     diag_updater.update();
                 }
 

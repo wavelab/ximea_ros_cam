@@ -12,6 +12,14 @@ save_disk: false
 calib_mode: false
 
 ####################
+# Diagnostics Configuration Parameters Go Here!
+####################
+
+enable_diagnostics: true
+frequency_tolerance: 1.0
+data_age_max: 0.1
+
+####################
 # Camera Configuration Parameters Go Here!
 ####################
 
