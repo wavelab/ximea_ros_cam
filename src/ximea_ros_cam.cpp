@@ -219,7 +219,7 @@ void XimeaROSCam::initCam() {
     ROS_INFO_STREAM("calibration file: " << this->cam_calib_file_);
     this->private_nh_.param("poll_time", this->poll_time_, -1.0f);
     ROS_INFO_STREAM("poll_time: " << this->poll_time_);
-    this->private_nh_.param("poll_time_frame", this->poll_time_frame_, 0.0);
+    this->private_nh_.param("poll_time_frame", this->poll_time_frame_, 0.0f);
     ROS_INFO_STREAM("poll_time_frame: " << this->poll_time_frame_);
 
     //      -- apply compressed image parameters (from image_transport) --
