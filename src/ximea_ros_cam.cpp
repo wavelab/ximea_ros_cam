@@ -525,9 +525,13 @@ void XimeaROSCam::openCam() {
     }
 
     // Set bandwidth limit for camera and apply a safety ratio
+    ROS_INFO_STREAM("Limiting bandwidth to: " <<  
+            (int)((float)avail_bw*this->cam_bw_safetyratio_) << " Mbits/sec");
     xi_stat = xiSetParamInt(this->xi_h_,
                             XI_PRM_LIMIT_BANDWIDTH,
                             (int)((float)avail_bw*this->cam_bw_safetyratio_));
+    xi_stat = xiSetParamInt(this->xi_h_, XI_PRM_LIMIT_BANDWIDTH_MODE , XI_ON);
+
 
     //      -- Framerate control  --
     // For information purposes, obtain min and max calculated possible fps
