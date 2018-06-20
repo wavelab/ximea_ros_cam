@@ -252,7 +252,7 @@ void XimeaROSCam::initCam() {
     this->private_nh_.param("pub_frequency", this->pub_frequency, 10.0);
     ROS_INFO_STREAM("pub_frequency: " << this->pub_frequency);
     this->private_nh_.param("pub_frequency_tolerance",
-        this->pub_frequency_tolerance, 1.0);
+        this->pub_frequency_tolerance, 0.3);
     ROS_INFO_STREAM("pub_frequency_tolerance: " << this->pub_frequency_tolerance);
     this->private_nh_.param("data_age_max", this->age_max, 0.1);
     ROS_INFO_STREAM("data_age_max: " << this->age_max);
