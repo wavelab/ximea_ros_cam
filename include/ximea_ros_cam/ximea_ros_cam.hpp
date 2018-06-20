@@ -136,6 +136,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     std::string cam_serialno_;               // Camera serial no
     std::string cam_frameid_;
     float poll_time_;			     // For launching cameras in succession
+    float poll_time_frame_;                  // For each image buffer check
     int cam_model_;
     std::string cam_calib_file_;
     int cam_trigger_mode_;

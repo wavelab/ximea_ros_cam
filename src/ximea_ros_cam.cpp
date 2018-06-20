@@ -163,18 +163,20 @@ void XimeaROSCam::initTimers() {
 
     // Load camera polling callback timer ((Ensure that with multiple cameras,
     // each time is about 2 seconds spaced apart)
-    this->xi_open_device_cb_ = this->private_nh_.createTimer(ros::Duration(this->poll_time_),
+    this->xi_open_device_cb_ =
+        this->private_nh_.createTimer(ros::Duration(this->poll_time_),
         boost::bind(&XimeaROSCam::openDeviceCb, this));
+    ROS_INFO_STREAM("xi_open_device_cb_: " << this->xi_open_device_cb_);
 
     // Load camera frame capture callback timer
-    this->t_frame_cb_ = this->public_nh_.createTimer(ros::Duration(0),
+    this->t_frame_cb_ =
+        this->public_nh_.createTimer(ros::Duration(this->poll_time_frame_),
         boost::bind(&XimeaROSCam::frameCaptureCb, this));
     ROS_INFO_STREAM("t_frame_cb_: " << this->t_frame_cb_);
 
     // Report end of function
     ROS_INFO("... Timers Loaded.");
 }
-
 
 void XimeaROSCam::initStorage() {
     ROS_INFO("Loading Image Storage ... ");
@@ -239,7 +241,9 @@ void XimeaROSCam::initCam() {
         std::string("INVALID"));
     ROS_INFO_STREAM("calibration file: " << this->cam_calib_file_);
     this->private_nh_.param("poll_time", this->poll_time_, -1.0f);
-    ROS_INFO_STREAM("poll_time_: " << this->poll_time_);
+    ROS_INFO_STREAM("poll_time: " << this->poll_time_);
+    this->private_nh_.param("poll_time_frame", this->poll_time_frame_, 0.0f);
+    ROS_INFO_STREAM("poll_time_frame: " << this->poll_time_frame_);
 
     // Diagnostics
     this->private_nh_.param("enable_diagnostics", this->enable_diagnostics,
@@ -556,9 +560,13 @@ void XimeaROSCam::openCam() {
     }
 
     // Set bandwidth limit for camera and apply a safety ratio
+    ROS_INFO_STREAM("Limiting bandwidth to: " <<  
+            (int)((float)avail_bw*this->cam_bw_safetyratio_) << " Mbits/sec");
     xi_stat = xiSetParamInt(this->xi_h_,
                             XI_PRM_LIMIT_BANDWIDTH,
                             (int)((float)avail_bw*this->cam_bw_safetyratio_));
+    xi_stat = xiSetParamInt(this->xi_h_, XI_PRM_LIMIT_BANDWIDTH_MODE , XI_ON);
+
 
     //      -- Framerate control  --
     // For information purposes, obtain min and max calculated possible fps
