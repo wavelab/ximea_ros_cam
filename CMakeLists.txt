@@ -18,6 +18,7 @@ set(catkin_deps
     camera_info_manager
     std_msgs
     message_generation
+    diagnostic_updater
 )
 
 find_package(catkin REQUIRED ${catkin_deps})

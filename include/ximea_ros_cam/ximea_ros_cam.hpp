@@ -6,6 +6,8 @@
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
 
 //      XIMEA CAMERA INCLUDES
 #include <m3api/xiApi.h>
@@ -68,16 +70,23 @@ class XimeaROSCam : public nodelet::Nodelet {
     void initNodeHandles();
 
     /**
+     * @brief  Initialize diagnostics.
+     *
+     * Initialize diagnostics and its parameters.
+     */
+    void initDiagnostics();
+
+    /**
      * @brief  Initialize all publishers.
      *
-     * Initialize all publishers. Includes the system supervisor publisher.
+     * Initialize all publishers.
      */
     void initPubs();
 
     /**
      * @brief  Initialize all timers.
      *
-     * Initialize all timers. Includes the system supervisor publisher.
+     * Initialize all timers.
      */
     void initTimers();
 
@@ -146,13 +155,23 @@ class XimeaROSCam : public nodelet::Nodelet {
     int cam_roi_height_;
     bool cam_framerate_control_;   // framerate control - enable or disable
     int cam_framerate_set_;      // framerate control - setting fps
-
     int cam_img_cap_timeout_;       // max time to wait for img
     // white balance mode: 0 - none, 1 - use coeffs, 2 = auto
     int cam_white_balance_mode_;
     float cam_white_balance_coef_r_; // white balance coefficient (rgb)
     float cam_white_balance_coef_g_;
     float cam_white_balance_coef_b_;
+
+    // Diagnostics
+    bool enable_diagnostics;
+    diagnostic_updater::Updater diag_updater;
+    std::shared_ptr<diagnostic_updater::TopicDiagnostic> cam_pub_diag;
+    double pub_frequency_tolerance;
+    double pub_frequency;
+    double frequency_min;
+    double frequency_max;
+    double age_min;
+    double age_max;
 
     // Bandwidth Limiting
     int cam_num_in_bus_;            // # cameras in a single bus
