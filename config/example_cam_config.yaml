@@ -6,7 +6,7 @@
 image_directory: "/home/dev/"  # must be absolute path, not relative path (i.e. '~')
 
 # save images to the disk
-save_disk: false 
+save_disk: false
 
 # save images on trigger (calibration only)
 calib_mode: false
@@ -16,8 +16,9 @@ calib_mode: false
 ####################
 
 enable_diagnostics: true
-frequency_tolerance: 1.0
 data_age_max: 0.1
+pub_frequency: 10.0
+pub_frequency_tolerance: 1.0
 
 ####################
 # Camera Configuration Parameters Go Here!

@@ -116,8 +116,10 @@ void XimeaROSCam::initNodeHandles() {
 
 void XimeaROSCam::initDiagnostics() {
     if (this->enable_diagnostics) {
-        this->frequency_min = this->cam_framerate_set_ - this->frequency_tolerance;
-        this->frequency_max = this->cam_framerate_set_ + this->frequency_tolerance;
+        this->frequency_min =
+            this->pub_frequency - this->pub_frequency_tolerance;
+        this->frequency_max =
+            this->pub_frequency + this->pub_frequency_tolerance;
         this->diag_updater.setHardwareID(this->cam_name_);
         this->cam_pub_diag =
             std::make_shared<diagnostic_updater::TopicDiagnostic>(
@@ -125,7 +127,7 @@ void XimeaROSCam::initDiagnostics() {
                 this->diag_updater,
                 diagnostic_updater::FrequencyStatusParam(
                     &this->frequency_min, &this->frequency_max,
-                    0.0, 10),
+                    0.0, 20),
                 diagnostic_updater::TimeStampStatusParam(
                     this->age_min, this->age_max));
     }
@@ -238,10 +240,16 @@ void XimeaROSCam::initCam() {
     ROS_INFO_STREAM("calibration file: " << this->cam_calib_file_);
     this->private_nh_.param("poll_time", this->poll_time_, -1.0f);
     ROS_INFO_STREAM("poll_time_: " << this->poll_time_);
-    this->private_nh_.param("enable_diagnostics", this->enable_diagnostics, false);
-    ROS_INFO_STREAM("frequency_tolerance: " << this->frequency_tolerance);
-    this->private_nh_.param("frequency_tolerance", this->frequency_tolerance, 1.0);
+
+    // Diagnostics
+    this->private_nh_.param("enable_diagnostics", this->enable_diagnostics,
+        false);
     ROS_INFO_STREAM("enable_diagnostics: " << this->enable_diagnostics);
+    this->private_nh_.param("pub_frequency", this->pub_frequency, 1.0);
+    ROS_INFO_STREAM("pub_frequency: " << this->pub_frequency);
+    this->private_nh_.param("pub_frequency_tolerance",
+        this->pub_frequency_tolerance, 1.0);
+    ROS_INFO_STREAM("pub_frequency_tolerance: " << this->pub_frequency_tolerance);
     this->private_nh_.param("data_age_max", this->age_max, 0.1);
     ROS_INFO_STREAM("data_age_max: " << this->age_max);
 
