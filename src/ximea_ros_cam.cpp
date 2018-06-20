@@ -247,9 +247,9 @@ void XimeaROSCam::initCam() {
 
     // Diagnostics
     this->private_nh_.param("enable_diagnostics", this->enable_diagnostics,
-        false);
+        true);
     ROS_INFO_STREAM("enable_diagnostics: " << this->enable_diagnostics);
-    this->private_nh_.param("pub_frequency", this->pub_frequency, 1.0);
+    this->private_nh_.param("pub_frequency", this->pub_frequency, 10.0);
     ROS_INFO_STREAM("pub_frequency: " << this->pub_frequency);
     this->private_nh_.param("pub_frequency_tolerance",
         this->pub_frequency_tolerance, 1.0);
