@@ -206,14 +206,30 @@ void XimeaROSCam::initStorage() {
         boost::filesystem::path calib_dir = main_dir /
                                             (this->cam_name_ + "/calib/");
         this->png_path_ = calib_dir.string();
-        boost::filesystem::create_directories(calib_dir);
+        if (!boost::filesystem::create_directories(calib_dir))
+        {
+            // failed to create directory, exit ROS and explain.
+            ROS_INFO_STREAM("ERROR: unable to create directory: " << calib_dir);
+            ROS_INFO_STREAM("Please make sure that the image_directory "
+                         << "parameter is set to a folder with the proper "
+                         << "permissions in the config file.");
+            ros::shutdown();
+        }
     }
 
     // directory that holds video stream images
     boost::filesystem::path img_stream_dir = main_dir /
                                              (this->cam_name_ + "/stream/");
     this->bin_path_ = img_stream_dir.string();
-    boost::filesystem::create_directories(img_stream_dir);
+    if (!boost::filesystem::create_directories(img_stream_dir))
+    {
+        // failed to create directory, exit ROS and explain.
+        ROS_INFO_STREAM("ERROR: unable to create directory: " << img_stream_dir);
+        ROS_INFO_STREAM("Please make sure that the image_directory "
+                     << "parameter is set to a folder with the proper "
+                     << "permissions in the config file.");
+        ros::shutdown();
+    }
 
     this->save_trigger_ = false;
 
