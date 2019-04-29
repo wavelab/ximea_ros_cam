@@ -205,6 +205,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     std::string image_directory_;
     std::string png_path_;
     std::string bin_path_;
+    
 
     // NODELET HANDLES
     ros::NodeHandle public_nh_;
