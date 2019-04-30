@@ -6,9 +6,9 @@
         <param name="frame_id"        type="string" value="0"        />
         <param name="num_cams_in_bus" type="int"    value="2"        />
         <param name="bw_safetyratio"  type="double" value="1.0"      />
-        <param name="publish_xi_image_info" type="bool" value="false"/>
+        <param name="publish_xi_image_info" type="bool" value="true"/>
         <param name="poll_time"       type="double" value="2.0"/>
-        <param name="poll_time_frame" type="double" value="0.5"/>
+        <param name="poll_time_frame" type="double" value="0.001"/>
         <rosparam command="load" file="$(find ximea_ros_cam)/config/example_cam_config.yaml" />
     </node>
 
@@ -19,9 +19,9 @@
         <param name="frame_id"        type="string" value="0"        />
         <param name="num_cams_in_bus" type="int"    value="2"        />
         <param name="bw_safetyratio"  type="double" value="1.0"      />
-        <param name="publish_xi_image_info" type="bool" value="false"/>
+        <param name="publish_xi_image_info" type="bool" value="true"/>
         <param name="poll_time"       type="double" value="4.0"/>
-        <param name="poll_time_frame" type="double" value="0.5"/>
+        <param name="poll_time_frame" type="double" value="0.001"/>
         <rosparam command="load" file="$(find ximea_ros_cam)/config/example_cam_config.yaml" />
     </node>
 </launch>
