@@ -93,6 +93,8 @@ Copy the `example_cam.launch` and input another serial number to `serial_no` of 
 
 ## Parameter Descriptions:
 
+**Note that these parameters are found in either the config file or launch file**
+
 ### General
 
 `serial_no` - Serial number of the Ximea camera (used to locate the proper camera)
@@ -108,6 +110,10 @@ Copy the `example_cam.launch` and input another serial number to `serial_no` of 
 `bw_safetyratio` - Bandwidth safety ratio, a multiplier to the bandwidth allocated for each camera
 
 `poll_time` - Used to set the duration (in seconds) which the camera is attempted to be opened again. When using multiple cameras, a duration of 2 seconds between each camera is recommended. (i.e. `poll_time=0.0` and `poll_time=2.0` for cameras 1 and 2).
+
+`poll_time_frame` - This is the ROS timer loop period for the ximea camera node. It should generally be set to a rate that is a factor higher than the camera capture rate. For example, if the camera runs at 20Hz (or 0.05s period) and `poll_time_frame` set to 0.001s, then the timer will constantly loop every 0.001 seconds which is faster than the 0.05s period of the camera capture time, with an error that is roughly 0.000 to 0.002 between frames. **Warning: if this value is larger than the period of the camera capture rate, then the frame rate of the camera is capped to the rate of the `poll_time_frame`, for example, if `poll_time_frame` is 0.5s, then the maximum rate that the camera can achieve is 2Hz**
+
+`publish_xi_image_info` - Flag for publishing the extra ximea camera information provided with each image acquisition.
 
 ### Image Saving
 
