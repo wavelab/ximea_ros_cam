@@ -31,6 +31,7 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <deque>
 #include <map>
 #include <yaml-cpp/yaml.h>
 #include <sys/stat.h>
@@ -104,8 +105,6 @@ class XimeaROSCam : public nodelet::Nodelet {
     static std::map<std::string, int> ImgFormatMap;
     static std::map<std::string, int> BytesPerPixelMap;
     static std::map<std::string, std::string> ImgEncodingMap;
-    static std::map<int, int> CamMaxPixelWidth;
-    static std::map<int, int> CamMaxPixelHeight;
 
     // // Get camera lists
     // std::vector<std::string> getCamConfigFiles(std::string cam_list);
@@ -134,6 +133,7 @@ class XimeaROSCam : public nodelet::Nodelet {
     std::string cam_encoding_;               // Camera image encoding
     int cam_bytesperpixel_;                  // Camera image bytes per pixel
     std::string cam_serialno_;               // Camera serial no
+    std::string cam_user_id_;
     std::string cam_frameid_;
     float poll_time_;			     // For launching cameras in succession
     float poll_time_frame_;                  // For each image buffer check
@@ -205,6 +205,27 @@ class XimeaROSCam : public nodelet::Nodelet {
     std::string image_directory_;
     std::string png_path_;
     std::string bin_path_;
+
+    // convenience wrappers of the common param functions
+    XI_RETURN get(const char* prm, int& value);
+    XI_RETURN get(const char* prm, uint64_t& value);
+    XI_RETURN get(const char* prm, float& value);
+    XI_RETURN get(const char* prm, std::string& value);
+    XI_RETURN set(const char* prm, int value);
+    XI_RETURN set(const char* prm, float value);
+    XI_RETURN set(const char* prm, const std::string& value);
+
+    void setWhiteBalance(void);
+    void setTrigger(void);
+    void setExposure(void);
+    void setRegion(void);
+    void setBandwidth(void);
+    void setFramerate(void);
+
+    bool camera_timestamp_supported_;
+    void sampleCameraTimestamp(void);
+    ros::Time iterpolateTimestamp(const XI_IMG& frame);
+    std::deque< std::pair<ros::Time,ros::Duration> > timestamp_queue_; 
 
     // NODELET HANDLES
     ros::NodeHandle public_nh_;
