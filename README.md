@@ -5,6 +5,9 @@
 Tested on:
 
 * Ximea USB 3.0 MQ013CG-E2
+* Ximea USB 3.0 MQ022RG-CM
+* Ximea USB 3.0 MQ042CG-CM
+* Ximea USB 3.0 MC124CG-SY-UB
 
 **Make sure that the camera firmware (both CPU and FPGA) are updated to the latest stable firmware! See: https://www.ximea.com/support/wiki/allprod/XIMEA_Camera_Firmware_Command-Line_Update for more info**
 
@@ -14,7 +17,7 @@ Tested on:
 
 Download and install the Ximea Software Package here: https://www.ximea.com/support/documents/4
 
-### Ubuntu 16.04 LTS Installation
+### Ubuntu 16.04 and 18.04 LTS Installation
 
 Retrieve the Ximea Software Package:
 ```
@@ -97,7 +100,11 @@ Copy the `example_cam.launch` and input another serial number to `serial_no` of 
 
 ### General
 
-`serial_no` - Serial number of the Ximea camera (used to locate the proper camera)
+`serial_no` - Serial number of the Ximea camera (used to locate the correct camera)
+
+`user_id` - User id of the Ximea camera (used to locate the correct camera if a serial number is not provided)
+
+If neither `serial_no` or `user_id` is provided the driver will open the first camera on the bus
 
 `cam_name` - Name of the camera used when saving camera images and snapshots under the directory pointed by `image_directory`
 
@@ -184,7 +191,9 @@ XI_RAW16 - RAW 16 bit
 
 `roi_top`, `roi_left` - Top left corner in pixels
 
-`roi_width`, `roi_height` - Width, height in pixels
+
+
+`roi_width`, `roi_height` - Width, height in pixels. Use negative values or simply don't set to use the full frame.
 
 # License
 

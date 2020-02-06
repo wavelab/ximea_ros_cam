@@ -493,10 +493,9 @@ void XimeaROSCam::openCam() {
     if(camera_timestamp_supported_)
         ROS_INFO("Using camera timestamp.");
     else
-        ROS_ERROR("Camera timestamp not supported."); 
+        ROS_ERROR("Camera timestamp not supported.");
 
-        
-    
+
     //      -- Optimize transport buffer commit/size based on payload  --
     // // For usb controllers that can handle it...
     // src: https://www.ximea.com/support/wiki/apis/Linux_USB30_Support
