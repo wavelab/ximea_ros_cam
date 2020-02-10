@@ -84,56 +84,57 @@ XimeaROSCam::~XimeaROSCam() {
     // To avoid warnings
     (void)xi_stat;
 }
-
-XI_RETURN XimeaROSCam::get(const char* prm, int& value){
+ 
+XI_RETURN XimeaROSCam::get(const char* prm, int& value, bool suppress_warn){
     XI_RETURN xi_stat = xiGetParamInt(this->xi_h_, prm, &value);
-    if(xi_stat != XI_OK)
+    if(xi_stat != XI_OK && !suppress_warn)
         ROS_WARN_STREAM("xiGetParamInt " << prm << " returned " << xi_stat);
     return xi_stat;
 }
-XI_RETURN XimeaROSCam::get(const char* prm, uint64_t& value){
+XI_RETURN XimeaROSCam::get(const char* prm, uint64_t& value, bool suppress_warn){
     uint32_t size = sizeof(value);
     XI_PRM_TYPE type = xiTypeInteger64;
     XI_RETURN xi_stat = xiGetParam(this->xi_h_, prm, &value, &size, &type);
-    if(xi_stat != XI_OK)
+    if(xi_stat != XI_OK && !suppress_warn)
         ROS_WARN_STREAM("xiGetParam type xiTypeInteger64 " << prm << " returned " << xi_stat);
     return xi_stat;
 }
-XI_RETURN XimeaROSCam::get(const char* prm, float& value){
+XI_RETURN XimeaROSCam::get(const char* prm, float& value, bool suppress_warn){
     XI_RETURN xi_stat = xiGetParamFloat(this->xi_h_, prm, &value);
-    if(xi_stat != XI_OK)
+    if(xi_stat != XI_OK && !suppress_warn)
         ROS_WARN_STREAM("xiGetParamFloat " << prm << " returned " << xi_stat);
     return xi_stat;
 }
-XI_RETURN XimeaROSCam::get(const char* prm, std::string& value){
+XI_RETURN XimeaROSCam::get(const char* prm, std::string& value, bool suppress_warn){
     char buf[256];
     XI_RETURN xi_stat = xiGetParamString(this->xi_h_, prm, buf, sizeof(buf));
-    if(xi_stat != XI_OK)
+    if(xi_stat != XI_OK && !suppress_warn)
         ROS_WARN_STREAM("xiGetParamString " << prm << " returned " << xi_stat);
     else
         value = std::string(buf);       
     return xi_stat;
 }
 
-XI_RETURN XimeaROSCam::set(const char* prm, int value){
+XI_RETURN XimeaROSCam::set(const char* prm, int value, bool suppress_warn){
     XI_RETURN xi_stat = xiSetParamInt(this->xi_h_, prm, value);
-    if(xi_stat != XI_OK)
+    if(xi_stat != XI_OK && !suppress_warn)
         ROS_WARN_STREAM("xiSetParamInt " << prm << " returned " << xi_stat);
     return xi_stat;
 }
-XI_RETURN XimeaROSCam::set(const char* prm, float value){
+XI_RETURN XimeaROSCam::set(const char* prm, float value, bool suppress_warn){
     XI_RETURN xi_stat = xiSetParamFloat(this->xi_h_, prm, value);
-    if(xi_stat != XI_OK)
+    if(xi_stat != XI_OK && !suppress_warn)
         ROS_WARN_STREAM("xiSetParamFloat " << prm << " returned " << xi_stat);
     return xi_stat;
 }
-XI_RETURN XimeaROSCam::set(const char* prm, const std::string& value){
+XI_RETURN XimeaROSCam::set(const char* prm, const std::string& value, bool suppress_warn){
     XI_RETURN xi_stat = xiSetParamString(this->xi_h_, prm, 
             const_cast<char*>(value.c_str()), value.size()); // cheeky const cast!
-    if(xi_stat != XI_OK)
+    if(xi_stat != XI_OK && !suppress_warn)
         ROS_WARN_STREAM("xiSetParamString " << prm << " returned " << xi_stat);
     return xi_stat;
 }
+
 
 // onInit() - on the initialization of the nodelet (not the class)
 void XimeaROSCam::onInit() {
@@ -493,7 +494,7 @@ void XimeaROSCam::openCam() {
     if(camera_timestamp_supported_)
         ROS_INFO("Using camera timestamp.");
     else
-        ROS_ERROR("Camera timestamp not supported.");
+        ROS_WARN("Camera timestamp not supported. Using time of arrival.");
 
 
     //      -- Optimize transport buffer commit/size based on payload  --
@@ -541,7 +542,7 @@ void XimeaROSCam::openDeviceCb() {
     }
     else
     {
-        ROS_INFO_STREAM("No serial number or user id provided. Opening first camera on bus");
+        ROS_INFO_STREAM("No serial number or user id provided. Opening first camera on bus.");
         xi_stat = xiOpenDevice(0, &this->xi_h_);
     }
     
@@ -551,7 +552,7 @@ void XimeaROSCam::openDeviceCb() {
             get(XI_PRM_DEVICE_SN, this->cam_serialno_);
         // if(this->user_id_.empty())  
         //     get(XI_PRM_DEVICE_USER_ID, this->user_id_);  
-        ROS_INFO_STREAM("Succesfully opened camera. Serial number: "
+        ROS_INFO_STREAM("Successfully opened camera. Serial number: "
                         << this->cam_serialno_);
         this->xi_open_device_cb_.stop();
 
@@ -840,9 +841,9 @@ void XimeaROSCam::setExposure(){
             ROS_ERROR_STREAM("Failed to set exposure to auto.");                   
         else
             ROS_INFO_STREAM("Exposure set to auto." 
-                    " Exposure prioity: " << this->cam_autoexposure_priority_ << 
-                    " Max exposure: " << this->cam_autotime_limit_ << 
-                    " Max gain: " << this->cam_autogain_limit_); 
+                    " Exposure priority: " << this->cam_autoexposure_priority_ << 
+                    "  Max exposure: " << this->cam_autotime_limit_ << 
+                    "  Max gain: " << this->cam_autogain_limit_); 
     } else { // set manual exposure       
         if(     set( XI_PRM_AEAG, 0) |
                 set( XI_PRM_EXPOSURE, this->cam_exposure_time_) |
@@ -851,7 +852,7 @@ void XimeaROSCam::setExposure(){
         else
             ROS_INFO_STREAM("Exposure set to manual." 
                     " Exposure: " << this->cam_exposure_time_ << 
-                    " Gain: " << this->cam_manualgain_); 
+                    "  Gain: " << this->cam_manualgain_); 
     }
 
 }
@@ -932,34 +933,52 @@ void XimeaROSCam::setBandwidth(void){
     // apply the safety ratio
     if(this->cam_bw_safetyratio_ > 0.0)
        available_bandwidth = int(available_bandwidth * this->cam_bw_safetyratio_);
- 
+
+    // clamp to reported limits 
+    int min_bandwidth=0, max_bandwidth=0;
+    if(     get( XI_PRM_LIMIT_BANDWIDTH XI_PRM_INFO_MIN, min_bandwidth) == XI_OK &&
+            get( XI_PRM_LIMIT_BANDWIDTH XI_PRM_INFO_MAX, max_bandwidth) == XI_OK){                
+        available_bandwidth = clamp(available_bandwidth, min_bandwidth, max_bandwidth);
+    }
+
     // Set bandwidth limit 
-    if( set( XI_PRM_LIMIT_BANDWIDTH, available_bandwidth))           
-        ROS_ERROR_STREAM("Failed to limit bandwidth.");
-    else if(set( XI_PRM_LIMIT_BANDWIDTH_MODE, XI_ON))
-        ROS_WARN_STREAM(XI_PRM_LIMIT_BANDWIDTH_MODE << 
-                " not supported on MQ, MU, MD and MR models.");
-    else 
+    if(set( XI_PRM_LIMIT_BANDWIDTH, available_bandwidth)){
+        ROS_ERROR_STREAM("Failed to limit bandwidth to " <<  
+                available_bandwidth << " Mbits/sec.");
+    } else {        
+        set( XI_PRM_LIMIT_BANDWIDTH_MODE, XI_ON, true); // not supported on MQ, MU, MD and MR models
+        get( XI_PRM_LIMIT_BANDWIDTH, available_bandwidth ); // read back         
         ROS_INFO_STREAM("Bandwidth limited to " << 
                 available_bandwidth << " Mbits/sec.");
+    }
 }
 
 void XimeaROSCam::setFramerate(void){
     //      -- Framerate control  --
     // For information purposes, obtain min and max calculated possible fps
-    get( XI_PRM_FRAMERATE XI_PRM_INFO_MIN, this->min_fps_);
-    get( XI_PRM_FRAMERATE XI_PRM_INFO_MAX, this->max_fps_);
+    float framerate = this->cam_framerate_set_; // as float
+    if(     get( XI_PRM_FRAMERATE XI_PRM_INFO_MIN, this->min_fps_) == XI_OK ||
+            get( XI_PRM_FRAMERATE XI_PRM_INFO_MAX, this->max_fps_) == XI_OK ) // max fps often returns as 0
+        ROS_INFO_STREAM("Reported framerate limits. Min: " << this->min_fps_ << "  Max: " << this->max_fps_ ); 
 
     // If we are not in trigger mode, determine if we want to limit fps
     if (this->cam_trigger_mode_ == 0) {
         if (this->cam_framerate_control_) {
-            if(     set( XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE) |
-                    set( XI_PRM_FRAMERATE, this->cam_framerate_set_))
+            // frame limit mode settings differ over camera models 
+            // XI_ACQ_TIMING_MODE_FRAME_RATE_LIMIT is supported on CB, MC, MT, MX 
+            // XI_ACQ_TIMING_MODE_FRAME_RATE is supported on MQ, MD
+            // to cover for future models rather than check try both 
+            if( set( XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE_LIMIT, true)  && 
+                    set( XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE ) ) { 
+                ROS_ERROR_STREAM("Failed to set frame rate limit mode.");
+            } else if(set( XI_PRM_FRAMERATE, framerate )) {
                 ROS_ERROR_STREAM("Failed to set frame rate of " 
-                        << this->cam_framerate_set_ << "Hz.");
-            else
+                        << framerate << "Hz.");
+            } else {
+                get( XI_PRM_FRAMERATE, framerate );
                 ROS_INFO_STREAM("Frame rate set to "
-                         << this->cam_framerate_set_ << "Hz.");  
+                         << framerate << "Hz.");                           
+            }
         } else { // default to free run
             if(set( XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FREE_RUN))
                 ROS_ERROR_STREAM("Failed to set frame rate to free run.");
@@ -967,12 +986,13 @@ void XimeaROSCam::setFramerate(void){
                 ROS_INFO_STREAM("Frame rate set to free run.");  
         }
     }
+
 }
 
 void XimeaROSCam::sampleCameraTimestamp(void){
     uint64_t nanoseconds;
     ros::Time pre_stamp = ros::Time::now();
-    camera_timestamp_supported_ = get(XI_PRM_TIMESTAMP, nanoseconds) == XI_OK;
+    camera_timestamp_supported_ = get(XI_PRM_TIMESTAMP, nanoseconds, true) == XI_OK;
     ros::Time post_stamp = ros::Time::now();
 
     if(!camera_timestamp_supported_)        
@@ -982,14 +1002,15 @@ void XimeaROSCam::sampleCameraTimestamp(void){
     timestamp_queue_.emplace_back(std::make_pair( pre_stamp, 
             ros::Duration( nanoseconds/billion, nanoseconds%billion )));
 
-    // ROS_INFO_STREAM("Timestamps:" << // TODO delete or demote to DEGUG
+    // ROS_INFO_STREAM("Timestamps:" << 
     //         " System: " << timestamp_queue_.back().first << 
     //         " Camera: " << timestamp_queue_.back().second );
 
     // monitor round trip speed
     ros::Duration round_trip_duration(post_stamp - pre_stamp);
-    if(round_trip_duration > ros::Duration(0.0025)) // arbitary 2.5 ms (I see a 2 ms average with an xiC on my system)
-        ROS_WARN_STREAM_THROTTLE(3, "Camera timestamp query took " << round_trip_duration << " seconds." );    
+    if(round_trip_duration > ros::Duration(0.0025)) // arbitary 2.5 ms 
+        ROS_WARN_STREAM_THROTTLE(3, "Camera timestamp query took " << 
+                round_trip_duration << " seconds." );    
 }
 
 ros::Time XimeaROSCam::iterpolateTimestamp(const XI_IMG& frame){

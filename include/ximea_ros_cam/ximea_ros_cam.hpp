@@ -207,13 +207,13 @@ class XimeaROSCam : public nodelet::Nodelet {
     std::string bin_path_;
 
     // convenience wrappers of the common param functions
-    XI_RETURN get(const char* prm, int& value);
-    XI_RETURN get(const char* prm, uint64_t& value);
-    XI_RETURN get(const char* prm, float& value);
-    XI_RETURN get(const char* prm, std::string& value);
-    XI_RETURN set(const char* prm, int value);
-    XI_RETURN set(const char* prm, float value);
-    XI_RETURN set(const char* prm, const std::string& value);
+    XI_RETURN get(const char* prm, int& value, bool suppress_warn = false);
+    XI_RETURN get(const char* prm, uint64_t& value, bool suppress_warn = false);
+    XI_RETURN get(const char* prm, float& value, bool suppress_warn = false);
+    XI_RETURN get(const char* prm, std::string& value, bool suppress_warn = false);
+    XI_RETURN set(const char* prm, int value, bool suppress_warn = false);
+    XI_RETURN set(const char* prm, float value, bool suppress_warn = false);
+    XI_RETURN set(const char* prm, const std::string& value, bool suppress_warn = false);
 
     void setWhiteBalance(void);
     void setTrigger(void);
