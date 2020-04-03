@@ -578,7 +578,7 @@ void XimeaROSCam::openCam() {
     }
 
     // Set bandwidth limit for camera and apply a safety ratio
-    ROS_INFO_STREAM("Limiting bandwidth to: " <<  
+    ROS_INFO_STREAM("Limiting bandwidth to: " <<
             (int)((float)avail_bw*this->cam_bw_safetyratio_) << " Mbits/sec");
     xi_stat = xiSetParamInt(this->xi_h_,
                             XI_PRM_LIMIT_BANDWIDTH,
@@ -872,6 +872,4 @@ void XimeaROSCam::triggerCb(const std_msgs::Empty::ConstPtr& msg) {
 
 } // NAMESPACE ximea_ros_cam
 
-PLUGINLIB_DECLARE_CLASS(ximea_ros_cam, XimeaROSCam,
-                        ximea_ros_cam::XimeaROSCam,
-                        nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(ximea_ros_cam::XimeaROSCam, nodelet::Nodelet);
