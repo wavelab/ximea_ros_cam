@@ -54,11 +54,11 @@ include_directories(include
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
             src/ximea_ros_cam.cpp
 )
 
-## Link the catkin libraries
+# Link the catkin libraries
 target_link_libraries(${PROJECT_NAME}
     ${XIMEA_LIBRARY}
     ${catkin_LIBRARIES}
