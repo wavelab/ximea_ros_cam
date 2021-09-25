@@ -24,7 +24,7 @@
     <depend>image_transport</depend>
     <depend>camera_info_manager</depend>
     <depend>std_msgs</depend>
-    <depend>opencv3</depend>
+    <depend>libopencv-dev</depend>
     <depend>message_generation</depend>
     <depend>diagnostic_updater</depend>
 
