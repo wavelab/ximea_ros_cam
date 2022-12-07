@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
-<package format="2">
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
     <!-- package information -->
     <name>ximea_ros_cam</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <description>Ximea ROS Camera</description>
 
     <!-- authour information -->
-    <author>Carlos Wang</author>
+    <author email="c25wang@uwaterloo.ca">Carlos Wang</author>
+    <maintainer email="michal.antkiewicz@uwaterloo.ca">Michal Antkiewicz</maintainer>
+
     <license>MIT</license>
-    <maintainer
-        email="c25wang@uwaterloo.ca">
-        Carlos Wang
-    </maintainer>
 
     <!-- build tool information  -->
-    <buildtool_depend>catkin</buildtool_depend>
+    <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+    <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake_core</buildtool_depend>
 
     <!-- depends -->
-    <depend>roscpp</depend>
+    <depend condition="$ROS_VERSION == 1">roscpp</depend>
     <depend>roslib</depend>
     <depend>nodelet</depend>
     <depend>sensor_msgs</depend>
@@ -30,7 +30,8 @@
 
     <!-- The export tag contains other, unspecified, tags -->
     <export>
-        <!-- nodelet plugin -->
-        <nodelet plugin="${prefix}/nodelets.xml"/>
+      <build_type condition="$ROS_VERSION == 1">catkin</build_type>
+      <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
+      <nodelet plugin="${prefix}/nodelets.xml"/>
     </export>
 </package>
