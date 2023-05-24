@@ -3,7 +3,7 @@
 ####################
 
 # directory to save images (make sure that directory exists and that it is an absolute path).
-image_directory: "/home/dev/"  # must be absolute path, not relative path (i.e. '~')
+image_directory: "/home/"  # must be absolute path, not relative path (i.e. '~')
 
 # save images to the disk
 save_disk: false
@@ -34,7 +34,7 @@ format: "XI_RGB24"
 
 # triggering (0 - none, 1 - software trigger (NOT IMPLMENTED YET),
 # 2 - hardware trigger)
-cam_trigger_mode: 0
+cam_trigger_mode: 1
 hw_trigger_edge: 0            # if hw trigger, 0/1 = rising/falling edge trigger
 
 # for camera frame rate

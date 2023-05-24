@@ -36,8 +36,8 @@ std::map<std::string, std::string> XimeaROSCam::ImgEncodingMap = {
 // -- 0 = MQ013CG-E2   -- //
 // --                  -- //
 
-std::map<int, int> XimeaROSCam::CamMaxPixelWidth = { {0, 1280} };
-std::map<int, int> XimeaROSCam::CamMaxPixelHeight = { {0, 1024} };
+std::map<int, int> XimeaROSCam::CamMaxPixelWidth = { {0, 2448} };
+std::map<int, int> XimeaROSCam::CamMaxPixelHeight = { {0, 1840} };
 
 XimeaROSCam::XimeaROSCam() : diag_updater{} {
     this->img_count_ = 0;                   // assume 0 images published
@@ -420,6 +420,7 @@ void XimeaROSCam::openCam() {
     xi_stat = xiSetParamInt(this->xi_h_,
                             XI_PRM_IMAGE_DATA_FORMAT,
                             this->cam_format_int_);
+    xiSetParamInt(this->xi_h_, XI_PRM_DOWNSAMPLING, XI_DWN_2x2);
 
     // //      -- Set auto white balance if requested --
     // if (this->cam_auto_white_balance_) {
@@ -490,6 +491,8 @@ void XimeaROSCam::openCam() {
         // Select software triggering
         // NOT FULLY IMPLEMENTED YET
         xi_stat = xiSetParamInt(this->xi_h_, XI_PRM_TRG_SOURCE, XI_TRG_SOFTWARE);
+        xi_stat = xiSetParamInt(this->xi_h_, XI_PRM_GPO_SELECTOR, 1);
+        xi_stat = xiSetParamInt(this->xi_h_, XI_PRM_GPO_MODE, XI_GPO_FRAME_ACTIVE);
     } else {
         // Disable any triggering
         xi_stat = xiSetParamInt(this->xi_h_, XI_PRM_TRG_SOURCE, XI_TRG_OFF);
@@ -675,6 +678,7 @@ void XimeaROSCam::frameCaptureCb() {
 
     // Acquisition started
     if (this->is_active_) {
+        xi_stat = xiSetParamInt(this->xi_h_, XI_PRM_TRG_SOFTWARE, 1);
         // Acquire image
         xi_stat = xiGetImage(this->xi_h_,
                              this->cam_img_cap_timeout_,

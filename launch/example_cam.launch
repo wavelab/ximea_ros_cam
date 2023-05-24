@@ -1,14 +1,17 @@
 <launch>
     <node pkg="ximea_ros_cam" type="ximea_ros_cam_node" name="ximea_cam" output="screen">
-        <param name="serial_no"       type="string" value="12345678" />
+        <param name="serial_no"       type="string" value="UPCBS2110017" />
         <param name="cam_name"        type="string" value="ximea_cam" />
-        <param name="calib_file"      type="string" value=""         />
+        <param name="calib_file"      type="string" value="package://gripper_blaser_ros/cfg/ximea_info.yaml"         />
         <param name="frame_id"        type="string" value="0"        />
-        <param name="num_cams_in_bus" type="int"    value="2"        />
+        <param name="num_cams_in_bus" type="int"    value="1"        />
         <param name="bw_safetyratio"  type="double" value="1.0"      />
-        <param name="publish_xi_image_info" type="bool" value="true"/>
+        <param name="publish_xi_image_info" type="bool" value="false"/>
         <param name="poll_time"       type="double" value="2.0"/>
-        <param name="poll_time_frame" type="double" value="0.001"/>
+        <param name="poll_time_frame" type="double" value="0.01"/>
+        <param name="exposure_time"   type="int"    vale="2000"/>
+        <param name="white_balance_mode"   type="int"    vale="0"/>
+
         <rosparam command="load" file="$(find ximea_ros_cam)/config/example_cam_config.yaml" />
     </node>
 </launch>
