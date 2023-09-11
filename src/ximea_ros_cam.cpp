@@ -357,6 +357,10 @@ void XimeaROSCam::initCam() {
     ROS_INFO_STREAM("cam_white_balance_coef_b_: "
         << this->cam_white_balance_coef_b_);
 
+    //      -- apply image flip parameters --
+    this->private_nh_.param("horizontal_flip", this->cam_horizontal_flip, false);
+    this->private_nh_.param("vertical_flip", this->cam_vertical_flip, false);
+
     //      -- apply ROI parameters --
     this->private_nh_.param("roi_left", this->cam_roi_left_, -1);
     ROS_INFO_STREAM("cam_roi_left_: " << this->cam_roi_left_);
@@ -617,6 +621,20 @@ void XimeaROSCam::openCam() {
                                     XI_PRM_ACQ_TIMING_MODE,
                                     XI_ACQ_TIMING_MODE_FREE_RUN);
         }
+    }
+
+    // Flip image for mirrored cameras
+    if (this->cam_horizontal_flip) {
+        ROS_INFO_STREAM("Activating horizontal camera flip");
+        xi_stat = xiSetParamInt(this->xi_h_,
+                                XI_PRM_HORIZONTAL_FLIP,
+                                XI_ON);
+    }
+    if (this->cam_vertical_flip) {
+        ROS_INFO_STREAM("Activating vertical camera flip");
+        xi_stat = xiSetParamInt(this->xi_h_,
+                                XI_PRM_VERTICAL_FLIP,
+                                XI_ON);
     }
 
     //      -- Optimize transport buffer commit/size based on payload  --

@@ -161,6 +161,9 @@ class XimeaROSCam : public nodelet::Nodelet {
     float cam_white_balance_coef_r_; // white balance coefficient (rgb)
     float cam_white_balance_coef_g_;
     float cam_white_balance_coef_b_;
+    // image flipping
+    bool cam_horizontal_flip;
+    bool cam_vertical_flip;
 
     // Diagnostics
     bool enable_diagnostics;
