@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(ximea_ros_cam)
 
-## gnu++11 feature
-set(CMAKE_CXX_FLAGS "-std=gnu++11 -Wall -Wextra ${CMAKE_CXX_FLAGS}")
+## gnu++14 feature
+set(CMAKE_CXX_FLAGS "-std=gnu++14 -Wall -Wextra ${CMAKE_CXX_FLAGS}")
 
 ## Set ximea environment variables
 set(XIMEA_INCLUDE_PATH /usr/include)
