@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(ximea_ros_cam)
 
-## gnu++14 feature
-set(CMAKE_CXX_FLAGS "-std=gnu++14 -Wall -Wextra ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_STANDARD 17)
 
 ## Set ximea environment variables
 set(XIMEA_INCLUDE_PATH /usr/include)
@@ -21,11 +20,10 @@ set(catkin_deps
     diagnostic_updater
 )
 
-find_package(catkin REQUIRED ${catkin_deps})
-## Change to OpenCV 3 if necessary
-# find_package(OpenCV 3 REQUIRED)
+find_package(catkin REQUIRED COMPONENTS ${catkin_deps})
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED)
+add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
 # Declare ROS messages and services
 add_message_files(DIRECTORY msg FILES
@@ -66,6 +64,7 @@ target_link_libraries(${PROJECT_NAME}
     ${OpenCV_LIBRARIES}
     yaml-cpp
 )
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 
 ## Package depends on its generated messages
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
@@ -75,12 +74,13 @@ add_executable(${PROJECT_NAME}_node src/ximea_ros_cam_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
-                      ${XIMEA_LIBRARY}
-                      ${catkin_LIBRARIES}
-                      ${OpenCV_LIBRARIES}
-                      yaml-cpp
-                      ${PROJECT_NAME}
+    ${XIMEA_LIBRARY}
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+    yaml-cpp
+    ${PROJECT_NAME}
 )
+target_compile_options(${PROJECT_NAME}_node PRIVATE -Wall -Wextra)
 
 #############
 ## Install ##
